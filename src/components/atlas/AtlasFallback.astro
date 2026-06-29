@@ -1,0 +1,14 @@
+---
+import { domains } from '@/data/domains';
+---
+<div class="atlas-card p-6">
+  <p class="kicker">Research atlas</p>
+  <div class="mt-6 grid gap-3 sm:grid-cols-2">
+    {domains.map((domain) => (
+      <div class="border-t hairline py-4">
+        <h3 class="font-serif text-2xl tracking-[-0.04em]">{domain.title}</h3>
+        <p class="mt-2 text-sm leading-6 text-ink-600">{domain.short}</p>
+      </div>
+    ))}
+  </div>
+</div>

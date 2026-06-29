@@ -1,0 +1,18 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+---
+<BaseLayout title="Lab — Systems Atlas" description="Interactive experiments and prototypes.">
+  <section class="container-atlas py-14 md:py-20">
+    <SectionHeader eyebrow="Lab" title="Small instruments for live research." text="This section is reserved for WebGL sketches, map demos, compression experiments, measurement visualizers, and agent traces. The first public release keeps the lab quiet until demos are worth showing." />
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+      {['WebGL atlas studies', 'Geospatial tile viewers', 'Measurement overlays'].map((item) => (
+        <div class="atlas-card p-6">
+          <p class="kicker">planned</p>
+          <h2 class="mt-4 font-serif text-3xl tracking-[-0.05em]">{item}</h2>
+          <p class="mt-4 text-sm leading-7 text-ink-600">A future interactive exhibit with code, notes, and careful status labeling.</p>
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

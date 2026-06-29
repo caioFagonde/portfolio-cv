@@ -1,0 +1,58 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SystemsAtlas from '@/components/atlas/SystemsAtlas';
+import AtlasFallback from '@/components/atlas/AtlasFallback.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import CaseCard from '@/components/CaseCard.astro';
+import { domains } from '@/data/domains';
+import { getCollection } from 'astro:content';
+const cases = (await getCollection('cases')).filter((c) => c.data.featured).sort((a, b) => a.data.order - b.data.order).slice(0, 6);
+---
+<BaseLayout title="Caio Nahuel — Systems Atlas" description="A living research atlas for aerospace systems, numerical simulation, geospatial intelligence, computer vision, agentic software, and engineering platforms.">
+  <section class="container-atlas py-16 md:py-24">
+    <div class="grid gap-12 lg:grid-cols-[1fr_0.84fr] lg:items-end">
+      <div>
+        <p class="kicker">A living portfolio and research companion</p>
+        <h1 class="mt-5 font-serif text-6xl md:text-8xl leading-[0.88] tracking-[-0.075em] text-ink-900">
+          Systems, carefully made.
+        </h1>
+      </div>
+      <div class="lg:pb-3">
+        <p class="text-lg leading-8 text-ink-600">
+          I work where physics, geometry, data, and software architecture meet: aerospace simulation, orbit analysis, geospatial intelligence, computer vision, agentic systems, and research-grade engineering platforms.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3 font-mono text-[0.72rem] uppercase tracking-[0.14em] text-ink-700">
+          <a href="/cv" class="border-b border-copper-500 pb-1 hover:text-copper-700">Read CV</a>
+          <a href="/cases" class="border-b border-copper-500 pb-1 hover:text-copper-700">Explore cases</a>
+          <a href="/research" class="border-b border-copper-500 pb-1 hover:text-copper-700">Research log</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-atlas">
+    <div class="hidden md:block"><SystemsAtlas client:visible domains={domains} /></div>
+    <div class="md:hidden"><AtlasFallback /></div>
+  </section>
+
+  <section class="container-atlas py-20 md:py-28">
+    <SectionHeader eyebrow="Selected cases" title="A portfolio organized as engineering evidence." text="Each case is marked by status and confidence. Some are implemented, some are research programmes, and some are deliberately framed as future systems." />
+    <div class="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {cases.map((entry) => <CaseCard entry={entry} />)}
+    </div>
+  </section>
+
+  <section class="border-y hairline bg-paper-100/45 py-20">
+    <div class="container-atlas grid gap-10 md:grid-cols-[0.9fr_1.1fr] md:items-start">
+      <SectionHeader eyebrow="Working map" title="The through-line is systems engineering." text="The site is built to show the relationships between flight dynamics, spatial data, visual evidence, compression, infrastructure, and specialist agents." />
+      <div class="grid gap-4">
+        {['Aerospace gives the physical discipline.', 'Numerical methods give the computational discipline.', 'Geospatial and vision systems turn the world into evidence.', 'Agents and infrastructure make the work usable across software modules.'].map((line, i) => (
+          <div class="atlas-card p-5">
+            <p class="font-mono text-xs text-copper-700">0{i + 1}</p>
+            <p class="mt-2 text-lg leading-7 text-ink-800">{line}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

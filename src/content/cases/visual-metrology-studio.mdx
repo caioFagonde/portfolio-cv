@@ -1,0 +1,26 @@
+---
+title: "Visual Metrology Studio"
+summary: "A deterministic-first computer-vision system for visual measurement, uncertainty, and inspection reports."
+year: 2026
+status: "concept"
+confidence: "documented"
+domains: ["computer-vision", "structural-defect-analysis"]
+stack: ["OpenCV", "NumPy", "scikit-image", "HTML reports"]
+methods: ["scale anchoring", "subpixel edges", "mask area", "uncertainty propagation"]
+role: "Computer vision systems designer"
+featured: false
+order: 8
+links: []
+---
+
+## Problem
+
+Many image systems produce labels or masks but not defensible measurements. A measurement needs scale, method, uncertainty, evidence overlays, and reproducibility.
+
+## Direction
+
+The first version should measure distances, edge widths, and mask areas on synthetic ground-truth cases, then generate uncertainty-aware HTML and JSON reports.
+
+## Claim discipline
+
+A result is not certified just because it has a number. Certification requires valid input, valid scale, valid method, uncertainty, consistency, and provenance.

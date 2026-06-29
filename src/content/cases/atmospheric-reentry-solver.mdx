@@ -1,0 +1,29 @@
+---
+title: "Atmospheric Reentry Solver"
+summary: "A case study framing high-speed atmospheric reentry as a numerical-simulation and systems-design problem."
+year: 2026
+status: "concept"
+confidence: "conceptual"
+domains: ["aerospace-systems", "numerical-methods"]
+stack: ["C++", "Fortran", "MATLAB", "CFD", "Numerical methods"]
+methods: ["finite-volume reasoning", "shock-aware discretization", "thermal modeling"]
+role: "Aerospace systems engineer / numerical simulation designer"
+featured: true
+order: 1
+links: []
+---
+
+## Problem
+
+Atmospheric reentry is a coupled systems problem: compressible flow, thermal loading, trajectory design, numerical stiffness, stability, and computational cost all influence each other.
+
+## Direction
+
+This case records the architecture for a high-integrity simulation workflow rather than claiming a production CFD solver. The long-term aim is to express solver assumptions, discretization choices, verification checks, and output artifacts as a reproducible simulation pipeline.
+
+## What matters
+
+- physical assumptions are explicit;
+- numerical schemes are documented;
+- residuals and convergence are treated as first-class outputs;
+- visualizations support engineering interpretation rather than presentation alone.

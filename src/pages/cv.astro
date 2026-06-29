@@ -1,0 +1,51 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import { profile, cvSections, skillGroups } from '@/data/cv';
+---
+<BaseLayout title="CV — Caio Nahuel" description="Systems-engineering CV for Caio Nahuel Sousa Fagonde.">
+  <section class="container-atlas py-14 md:py-20">
+    <div class="grid gap-10 lg:grid-cols-[1fr_0.75fr] lg:items-end border-b hairline pb-12">
+      <div>
+        <p class="kicker">Curriculum vitae</p>
+        <h1 class="mt-4 font-serif text-5xl md:text-7xl leading-[0.92] tracking-[-0.07em]">{profile.name}</h1>
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-ink-600">{profile.summary}</p>
+      </div>
+      <aside class="atlas-card p-6">
+        <dl class="grid gap-4 text-sm">
+          <div><dt class="text-ink-600">Role</dt><dd class="font-medium">{profile.title}</dd></div>
+          <div><dt class="text-ink-600">Location</dt><dd class="font-medium">{profile.location}</dd></div>
+          <div><dt class="text-ink-600">Links</dt><dd class="mt-2 flex gap-4 font-mono text-xs uppercase tracking-[0.12em]"><a class="text-copper-700" href={profile.github}>GitHub</a><a class="text-copper-700" href={`mailto:${profile.email}`}>Email</a></dd></div>
+        </dl>
+      </aside>
+    </div>
+
+    <div class="mt-16 grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+      <SectionHeader eyebrow="Profile" title="Engineering across physical, spatial, and software systems." text="A CV organized by capability rather than job-title shorthand." />
+      <div class="grid gap-6">
+        {cvSections.map((section) => (
+          <section class="atlas-card p-6">
+            <h2 class="font-serif text-3xl tracking-[-0.05em]">{section.title}</h2>
+            <ul class="mt-5 grid gap-3 text-sm leading-7 text-ink-700">
+              {section.items.map((item) => <li class="border-t hairline pt-3">{item}</li>)}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
+
+    <section class="mt-20">
+      <p class="kicker">Technical stack</p>
+      <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {skillGroups.map((group) => (
+          <div class="atlas-card p-5">
+            <h3 class="font-serif text-2xl tracking-[-0.04em]">{group.name}</h3>
+            <div class="mt-4 flex flex-wrap gap-2">
+              {group.skills.map((skill) => <span class="rounded-full border hairline px-3 py-1 text-xs text-ink-700">{skill}</span>)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </section>
+</BaseLayout>

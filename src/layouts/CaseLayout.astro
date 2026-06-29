@@ -1,0 +1,29 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import DomainPill from '@/components/DomainPill.astro';
+const { frontmatter } = Astro.props;
+---
+<BaseLayout title={`${frontmatter.title} — Systems Atlas`} description={frontmatter.summary}>
+  <article class="container-atlas py-14 md:py-20">
+    <a href="/cases" class="kicker hover:text-copper-500">← Cases</a>
+    <header class="mt-10 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end border-b hairline pb-12">
+      <div>
+        <p class="kicker">{frontmatter.status} · {frontmatter.year}</p>
+        <h1 class="mt-4 font-serif text-5xl md:text-7xl leading-[0.93] tracking-[-0.06em] text-ink-900">{frontmatter.title}</h1>
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-ink-600">{frontmatter.summary}</p>
+      </div>
+      <aside class="atlas-card p-6">
+        <p class="kicker">case metadata</p>
+        <dl class="mt-5 grid gap-4 text-sm">
+          <div><dt class="text-ink-600">Role</dt><dd class="font-medium">{frontmatter.role}</dd></div>
+          <div><dt class="text-ink-600">Confidence</dt><dd class="font-medium">{frontmatter.confidence}</dd></div>
+          <div><dt class="text-ink-600">Stack</dt><dd class="mt-2 flex flex-wrap gap-2">{frontmatter.stack.map((s: string) => <span class="rounded-full border hairline px-3 py-1 text-xs">{s}</span>)}</dd></div>
+          <div><dt class="text-ink-600">Domains</dt><dd class="mt-2 flex flex-wrap gap-2">{frontmatter.domains.map((d: string) => <DomainPill id={d} />)}</dd></div>
+        </dl>
+      </aside>
+    </header>
+    <div class="prose-atlas mt-12 max-w-3xl">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,15 @@
+:root {
+  color-scheme: light;
+  --paper: #fffaf0;
+  --paper-soft: #f7eddc;
+  --paper-warm: #f1e3cc;
+  --paper-line: #ead8bd;
+  --ink: #1a1410;
+  --ink-soft: #2a211b;
+  --ink-muted: #5d4c3f;
+  --copper: #b86f3f;
+  --copper-dark: #704024;
+  --max-page: 1180px;
+  --radius: 18px;
+  --radius-small: 10px;
+}

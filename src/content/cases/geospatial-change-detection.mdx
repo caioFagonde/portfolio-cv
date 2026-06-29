@@ -1,0 +1,26 @@
+---
+title: "Geospatial Change Detection"
+summary: "A remote-sensing systems case for detecting land-cover change, degradation, encroachment, and operational events."
+year: 2026
+status: "active"
+confidence: "documented"
+domains: ["geospatial-intelligence", "computer-vision"]
+stack: ["Python", "PostGIS", "STAC", "COG", "Rasterio", "GeoPandas"]
+methods: ["spectral indices", "time-series change", "zonal statistics", "multi-sensor fusion"]
+role: "Geospatial software architect"
+featured: true
+order: 3
+links: []
+---
+
+## Problem
+
+Change detection is not one algorithm. Deforestation, degradation, encroachment, flooding, burn scars, crop stress, and construction all require different temporal, spectral, spatial, and operational assumptions.
+
+## System direction
+
+The practical design is a portfolio of methods wrapped by artifact contracts: input scenes, masks, confidence maps, method agreement maps, polygon statistics, and reports.
+
+## Design rule
+
+The output should not only say “change.” It should show what changed, where, according to which method, with what confidence, and how the result aggregates across spatial hierarchy.

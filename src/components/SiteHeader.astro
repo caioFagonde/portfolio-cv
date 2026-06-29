@@ -1,0 +1,23 @@
+---
+const nav = [
+  ['Cases', '/cases'],
+  ['Research', '/research'],
+  ['Lab', '/lab'],
+  ['CV', '/cv'],
+  ['Contact', '/contact']
+];
+---
+<header class="sticky top-0 z-40 border-b hairline bg-paper-50/88 backdrop-blur-sm">
+  <div class="container-atlas flex flex-wrap items-center justify-between gap-x-6 gap-y-3 py-4">
+    <a href="/" class="group flex items-baseline gap-3">
+      <span class="font-serif text-xl tracking-[-0.04em] text-ink-900">Caio Nahuel</span>
+      <span class="hidden font-mono text-[0.66rem] uppercase tracking-[0.18em] text-ink-600 sm:inline">Systems Atlas</span>
+    </a>
+    <a href="mailto:caionahuel@gmail.com" class="rounded-full border hairline px-4 py-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-ink-800 transition-colors hover:border-copper-500 hover:text-copper-700">Write</a>
+    <nav class="order-last flex w-full gap-4 overflow-x-auto pt-1 md:order-none md:w-auto md:gap-6 md:pt-0">
+      {nav.map(([label, href]) => (
+        <a href={href} class="shrink-0 font-mono text-[0.72rem] uppercase tracking-[0.16em] text-ink-600 transition-colors hover:text-copper-600">{label}</a>
+      ))}
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,28 @@
+---
+title: "LiDAR WebGL Client"
+summary: "A browser-native spatial visualization case for point clouds, streaming, WebGL, and engineering inspection."
+year: 2026
+status: "prototype"
+confidence: "documented"
+domains: ["geospatial-intelligence", "systems-infrastructure", "computer-vision"]
+stack: ["Three.js", "WebGL", "Potree", "S3", "Octree"]
+methods: ["octree streaming", "range requests", "GPU rendering", "spatial interaction"]
+role: "Full-stack spatial visualization engineer"
+featured: true
+order: 4
+links: []
+---
+
+## Problem
+
+Large point clouds require spatial indexing, streaming, and GPU-aware rendering. A useful client must remain responsive while communicating enough geometric structure for inspection.
+
+## Direction
+
+The core pattern is spatial level-of-detail: load only what the current camera and task require, preserve interactive frame rate, and keep measurement/inspection workflows visible.
+
+## Lessons
+
+- spatial data needs delivery architecture, not only visualization;
+- WebGL can be a serious engineering interface;
+- offline/static object storage can support high-performance spatial clients when the file layout is designed correctly.

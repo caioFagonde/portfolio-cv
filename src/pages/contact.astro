@@ -1,0 +1,18 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+---
+<BaseLayout title="Contact — Systems Atlas" description="Contact Caio Nahuel for collaboration, research, or engineering work.">
+  <section class="container-atlas py-14 md:py-20">
+    <div class="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+      <SectionHeader eyebrow="Contact" title="Collaboration starts with the shape of the problem." text="Send a concise note about the system, constraint, dataset, simulation, or research direction. I prefer concrete context over broad pitches." />
+      <div class="atlas-card p-8">
+        <p class="text-lg leading-8 text-ink-700">For research, engineering, or consulting conversations:</p>
+        <a href="mailto:caionahuel@gmail.com?subject=Systems%20Atlas%20contact" class="mt-6 inline-flex rounded-full bg-ink-900 px-6 py-3 font-mono text-xs uppercase tracking-[0.16em] text-paper-50 transition-colors hover:bg-copper-700">Email Caio</a>
+        <div class="mt-10 border-t hairline pt-6 text-sm leading-7 text-ink-600">
+          <p>Useful context: domain, current system, constraints, expected output, data sensitivity, timeline, and whether the work is exploratory or production-bound.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

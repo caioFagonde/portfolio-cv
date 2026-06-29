@@ -1,0 +1,26 @@
+---
+title: "Secure Execution Forge"
+summary: "A systems-infrastructure case for running untrusted or semi-trusted computational workloads with isolation and observability."
+year: 2026
+status: "concept"
+confidence: "conceptual"
+domains: ["systems-infrastructure", "agentic-systems"]
+stack: ["Docker", "WASM", "seccomp", "eBPF", "worker queues"]
+methods: ["sandboxing", "resource limits", "audit logging", "runtime policy"]
+role: "Systems architecture researcher"
+featured: false
+order: 6
+links: []
+---
+
+## Problem
+
+A scientific or agentic platform eventually needs to run code: simulations, preprocessing, extraction scripts, tests, notebooks, and model jobs. That execution must be bounded.
+
+## Direction
+
+The Forge concept separates job specification, sandbox profile, resource budget, filesystem policy, network policy, and audit trace.
+
+## Status
+
+This is a research and architecture direction, not a shipped product claim.
