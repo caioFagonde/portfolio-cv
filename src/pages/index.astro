@@ -1,58 +1,56 @@
 ---
+import { sitePath } from '@/utils/paths';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import SystemsAtlas from '@/components/atlas/SystemsAtlas';
-import AtlasFallback from '@/components/atlas/AtlasFallback.astro';
-import SectionHeader from '@/components/SectionHeader.astro';
+import AIBlueprint from '@/components/AIBlueprint.astro';
+import SkillsMap from '@/components/SkillsMap.astro';
+import ProjectPreview from '@/components/ProjectPreview.astro';
 import CaseCard from '@/components/CaseCard.astro';
-import { domains } from '@/data/domains';
+import { consultingServices } from '@/data/services';
+import { aiCapabilities } from '@/data/ai';
+import { githubRepoSignals, githubSnapshot } from '@/data/github';
+import { projects } from '@/data/projects';
 import { getCollection } from 'astro:content';
-const cases = (await getCollection('cases')).filter((c) => c.data.featured).sort((a, b) => a.data.order - b.data.order).slice(0, 6);
+const caseArchive = await getCollection('cases');
+const cases = ['foundry-platform', 'agentic-cortex', 'orbit-trajectory-propagator'].map((slug) => caseArchive.find((entry) => entry.slug === slug)!).filter(Boolean);
+const selected = ['foundry-platform', 'geodocs-document-assistant', 'personal-os', 'agent-qa-harness'].map((slug) => projects.find((p) => p.slug === slug)!);
 ---
-<BaseLayout title="Caio Nahuel — Systems Atlas" description="A living research atlas for aerospace systems, numerical simulation, geospatial intelligence, computer vision, agentic software, and engineering platforms.">
-  <section class="container-atlas py-16 md:py-24">
-    <div class="grid gap-12 lg:grid-cols-[1fr_0.84fr] lg:items-end">
-      <div>
-        <p class="kicker">A living portfolio and research companion</p>
-        <h1 class="mt-5 font-serif text-6xl md:text-8xl leading-[0.88] tracking-[-0.075em] text-ink-900">
-          Systems, carefully made.
-        </h1>
-      </div>
-      <div class="lg:pb-3">
-        <p class="text-lg leading-8 text-ink-600">
-          I work where physics, geometry, data, and software architecture meet: aerospace simulation, orbit analysis, geospatial intelligence, computer vision, agentic systems, and research-grade engineering platforms.
-        </p>
-        <div class="mt-7 flex flex-wrap gap-3 font-mono text-[0.72rem] uppercase tracking-[0.14em] text-ink-700">
-          <a href="/cv" class="border-b border-copper-500 pb-1 hover:text-copper-700">Read CV</a>
-          <a href="/cases" class="border-b border-copper-500 pb-1 hover:text-copper-700">Explore cases</a>
-          <a href="/research" class="border-b border-copper-500 pb-1 hover:text-copper-700">Research log</a>
-        </div>
-      </div>
+<BaseLayout title="Caio Nahuel — Software, cloud & AI development" description="Full-stack development, cloud infrastructure, AI agents and chatbots by Caio Nahuel. Projects, technical consulting, and scientific software.">
+  <section class="container-atlas home-hero">
+    <div class="hero-grid">
+      <div><p class="kicker">Caio Nahuel · Software developer & aerospace engineer</p><h1>Software, cloud<br />& <span class="hero-emphasis">AI development.</span></h1><p class="hero-copy">I build web applications, backend services, and the infrastructure that runs them. I also develop AI agents and chatbots that work with your documents, databases, and tools.</p><div class="hero-actions"><a class="btn-primary" href={sitePath('/contact')}>Discuss a technical build <span class="ml-3" aria-hidden="true">↗</span></a><a class="btn-secondary" href="#selected-work">Explore selected work</a></div><p class="hero-footnote">Based in Brazil · Development & technical consulting</p></div>
+      <AIBlueprint />
     </div>
   </section>
-
-  <section class="container-atlas">
-    <div class="hidden md:block"><SystemsAtlas client:visible domains={domains} /></div>
-    <div class="md:hidden"><AtlasFallback /></div>
+  <div class="container-atlas discipline-strip">
+    {[
+      ['01', 'Software development', 'Web apps, APIs, databases, and internal tools.'],
+      ['02', 'Cloud infrastructure', 'Containers, workers, storage, and deployments.'],
+      ['03', 'AI agents & chatbots', 'Document search, conversations, and tool integrations.']
+    ].map(([n, title, text]) => <div><h2><span>{n}</span>{title}</h2><p>{text}</p></div>)}
+  </div>
+  <section id="skills" class="container-atlas editorial-section">
+    <div class="section-heading"><div><p class="kicker">Skills & connections</p><h2>What I work with.</h2><p>Browse the stack by area, or search for a particular tool.</p></div><a class="btn-tertiary" href={sitePath('/skills')}>Open the skills map ↗</a></div>
+    <SkillsMap />
+  </section>
+  <section id="selected-work" class="container-atlas editorial-section">
+    <div class="section-heading"><div><p class="kicker">Selected work / 2026</p><h2>A closer look at the work.</h2><p>Applications, assistants, and developer tools. Open a project for the architecture and technical details.</p></div><a class="btn-tertiary" href={sitePath('/projects')}>Explore all projects ↗</a></div>
+    <div class="work-list">{selected.map((project) => <a class="work-row visual-work-row" href={sitePath(`/projects/${project.slug}`)}><ProjectPreview slug={project.slug} /><div><h3>{project.title}</h3><span class="work-category">{project.category}</span></div><p>{project.description}</p><span class="work-status"><span class="work-arrow" aria-hidden="true">↗</span></span></a>)}</div>
+  </section>
+  <section class="ai-feature editorial-section">
+    <div class="container-atlas split-section"><div><p class="kicker">AI flows & chatbots</p><h2>AI connected to your application.</h2><p class="intro">I build the interface, retrieval pipeline, backend integrations, and deployment. The assistant can find a document, look up a record, or prepare an action for someone to approve.</p><div class="hero-actions"><a class="btn-primary" href={sitePath('/ai-systems')}>Explore AI systems <span class="ml-3" aria-hidden="true">↗</span></a></div></div><div>{aiCapabilities.map((item) => <div class="capability-row"><h3>{item.title}</h3><p>{item.text}</p></div>)}</div></div>
   </section>
 
-  <section class="container-atlas py-20 md:py-28">
-    <SectionHeader eyebrow="Selected cases" title="A portfolio organized as engineering evidence." text="Each case is marked by status and confidence. Some are implemented, some are research programmes, and some are deliberately framed as future systems." />
-    <div class="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-      {cases.map((entry) => <CaseCard entry={entry} />)}
-    </div>
+  <section class="section-rule editorial-section">
+    <div class="container-atlas service-index"><div><p class="kicker">Work together</p><h2 class="mt-3 font-serif text-[clamp(2rem,3.6vw,3.3rem)] leading-[1.13]">Have something<br />you want to build?</h2><p class="hero-copy">I can develop an application, connect an AI assistant to your systems, set up cloud infrastructure, or help untangle an existing codebase.</p><a class="btn-secondary mt-6" href={sitePath('/consulting')}>See consulting services</a></div><div>{consultingServices.map((service) => <a class="service-link" href={sitePath(`/consulting#${service.slug}`)}><h3>{service.title} <span aria-hidden="true">↗</span></h3><p>{service.summary}</p></a>)}</div></div>
   </section>
+  <section class="container-atlas editorial-section">
+    <div class="section-heading"><div><p class="kicker">Public code</p><h2>Code on GitHub.</h2><p>More applications, automation, and technical tools from my repositories.</p></div><a class="btn-tertiary" href={sitePath(githubSnapshot.profileUrl)} target="_blank" rel="noreferrer">GitHub profile ↗</a></div><div class="repo-ledger">{githubRepoSignals.slice(0, 3).map((repo) => <a href={sitePath(repo.url)} target="_blank" rel="noreferrer"><p class="kicker">{repo.label}</p><h3 class="mt-2">{repo.name} ↗</h3><p>{repo.signal}</p><div class="mt-4 flex flex-wrap gap-2">{repo.stack.slice(0,4).map((item) => <span class="meta-pill">{item}</span>)}</div></a>)}</div>
+  </section>
+  <section class="container-atlas editorial-section">
+    <div class="research-feature"><figure><img src={sitePath('/assets/resurgent-phobos.webp')} width="3840" height="2160" alt="A three-dimensional spacecraft trajectory around Phobos, with phase and distance plots" loading="lazy" /><figcaption class="mt-3 text-xs leading-6 text-ink-600">Resurgent astrodynamics · Spatial motion around Phobos.</figcaption></figure><div><p class="kicker">The science side</p><h2>I also build<br />orbital software.</h2><p class="hero-copy">My aerospace background comes through in OrbProp: a C++ simulation engine with a desktop workbench, Python bindings, and 3D trajectory views. Alongside it, I work on numerical methods and astrodynamics visualizations.</p><div class="hero-actions"><a class="btn-secondary" href={sitePath('/projects/orbit-trajectory-propagator')}>Explore OrbProp</a><a class="btn-tertiary" href={sitePath('/research')}>Research notes ↗</a></div></div></div>
+  </section>
+  <section class="container-atlas pb-12">
+    <div class="section-heading"><div><p class="kicker">Technical archive</p><h2>Architecture & case studies.</h2><p>Notes on the decisions behind the software.</p></div><a class="btn-tertiary" href={sitePath('/cases')}>View case studies ↗</a></div><div class="grid gap-5 md:grid-cols-3">{cases.map((entry) => <CaseCard entry={entry} />)}</div>
 
-  <section class="border-y hairline bg-paper-100/45 py-20">
-    <div class="container-atlas grid gap-10 md:grid-cols-[0.9fr_1.1fr] md:items-start">
-      <SectionHeader eyebrow="Working map" title="The through-line is systems engineering." text="The site is built to show the relationships between flight dynamics, spatial data, visual evidence, compression, infrastructure, and specialist agents." />
-      <div class="grid gap-4">
-        {['Aerospace gives the physical discipline.', 'Numerical methods give the computational discipline.', 'Geospatial and vision systems turn the world into evidence.', 'Agents and infrastructure make the work usable across software modules.'].map((line, i) => (
-          <div class="atlas-card p-5">
-            <p class="font-mono text-xs text-copper-700">0{i + 1}</p>
-            <p class="mt-2 text-lg leading-7 text-ink-800">{line}</p>
-          </div>
-        ))}
-      </div>
-    </div>
   </section>
 </BaseLayout>

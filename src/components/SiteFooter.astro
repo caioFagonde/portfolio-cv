@@ -1,12 +1,20 @@
-<footer class="border-t hairline mt-20">
-  <div class="container-atlas grid gap-10 py-12 md:grid-cols-[1fr_auto] md:items-end">
+---
+import { sitePath } from '@/utils/paths';
+import { profile } from '@/data/cv';
+---
+<footer class="site-footer">
+  <div class="container-atlas footer-top">
     <div>
-      <p class="kicker">Systems Atlas</p>
-      <p class="mt-3 max-w-xl text-sm leading-7 text-ink-600">A living portfolio of aerospace engineering, numerical simulation, geospatial intelligence, computer vision, agentic systems, and research-grade software platforms.</p>
+      <p class="kicker">Have a project in mind?</p>
+      <h2>Let’s talk.</h2>
+      <a class="footer-email" href={sitePath(`mailto:${profile.email}`)}>{profile.email} <span aria-hidden="true">↗</span></a>
+      <p class="footer-note">Software development, cloud infrastructure,<br />AI agents, and chatbots. Based in Brazil.</p>
     </div>
-    <div class="flex flex-wrap gap-4 font-mono text-xs uppercase tracking-[0.14em] text-ink-600">
-      <a href="https://github.com/caioFagonde" target="_blank" rel="noreferrer" class="hover:text-copper-600">GitHub</a>
-      <a href="mailto:caionahuel@gmail.com" class="hover:text-copper-600">Email</a>
+    <div class="footer-links">
+      <div><p class="kicker">Explore</p><a href={sitePath('/projects')}>Projects</a><a href={sitePath('/cases')}>Case studies</a><a href={sitePath('/research')}>Research</a><a href={sitePath('/demos')}>Demos & experiments</a></div>
+      <div><p class="kicker">Work together</p><a href={sitePath('/ai-systems')}>AI flows & chatbots</a><a href={sitePath('/consulting')}>Consulting</a><a href={sitePath('/workflow')}>Engineering workflow</a><a href={sitePath('/repo-audit')}>Codebase audit</a></div>
+      <div><p class="kicker">Elsewhere</p><a href={sitePath('/about')}>About</a><a href={sitePath('/cv')}>CV</a><a href="https://github.com/caioFagonde" target="_blank" rel="noreferrer">GitHub ↗</a><a href={sitePath('/contact')}>Contact</a></div>
     </div>
   </div>
+  <div class="container-atlas footer-bottom"><span>© {new Date().getFullYear()} Caio Nahuel Sousa Fagonde</span><span>Software · Cloud · AI</span></div>
 </footer>

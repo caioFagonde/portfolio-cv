@@ -1,30 +1,32 @@
 ---
-title: "Orbit & Trajectory Propagator"
-summary: "Orbit propagation, perturbation modeling, and trajectory analysis as a disciplined aerospace systems case."
+title: "OrbProp — Orbital Workbench"
+summary: "A C++ orbital simulation engine, desktop workbench, and C/Python interfaces for mission analysis."
 year: 2026
 status: "active"
 confidence: "documented"
-domains: ["aerospace-systems", "numerical-methods"]
-stack: ["MATLAB", "Fortran", "C++", "Numerical integration", "Control theory"]
-methods: ["state propagation", "J2 perturbation", "adaptive integration", "maneuver analysis"]
-role: "Aerospace engineer"
-featured: true
+domains: ["aerospace-systems", "numerical-methods", "systems-infrastructure"]
+stack: ["C++", "Electron", "TypeScript", "Python", "nanobind", "SPICE", "CMake"]
+methods: ["orbit propagation", "force-model registry", "reference comparisons", "trajectory export"]
+role: "Software developer & aerospace engineer"
+featured: false
 order: 2
 links: []
 ---
 
-## Problem
+## One engine, several interfaces
 
-Orbit analysis requires numerical rigor and systems thinking: initial state uncertainty, perturbations, integration stability, reference frames, and mission objectives must be handled together.
+OrbProp runs the same C++ propagator from the command line, a C API, and a Python package. The desktop workbench adds mission configuration, plots, a timeline, and 3D trajectory views. Batch experiments and interactive sessions share the numerical core.
 
-## Architecture
+## Physics and application code
 
-A clean propagator separates state representation, force models, integrators, event detection, and report generation. The same design discipline applies to future software libraries: keep physics, numerics, and artifacts separate.
+Force models and integrators have separate responsibilities. A method registry connects the selected gravity, atmosphere, radiation, tides, and ephemerides to the configuration of each run. Results include the resolved methods, units, and reference frames.
 
-## Technical themes
+The application displays those results alongside spacecraft and mission parameters. It keeps simulation state separate from camera and display state.
 
-- adaptive numerical integration;
-- orbital perturbation modeling;
-- state-space reasoning;
-- control and maneuver planning;
-- reproducible simulation outputs.
+## Working with other tools
+
+Trajectory exchange includes CCSDS documents, CSV, HDF5, CZML, and SPICE kernels. The C and Python interfaces let scripts use the engine without depending on the desktop application.
+
+The spacecraft image simulator combines an astrometric chain with optics and detector noise, producing FITS images and catalogue references. This connects orbital motion to the image a camera would observe.
+
+[Read the project details](/projects/orbit-trajectory-propagator).

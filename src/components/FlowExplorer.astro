@@ -1,0 +1,52 @@
+---
+import { sitePath } from '@/utils/paths';
+import { flowPatterns } from '@/data/ai';
+---
+<div class="flow-explorer" data-flow-explorer>
+  <div class="flow-controls" hidden aria-label="Choose an architecture pattern">
+    {flowPatterns.map((pattern, index) => <button type="button" data-pattern={pattern.id} aria-pressed={index === 0} aria-controls={`flow-${pattern.id}`}>{pattern.label}</button>)}
+  </div>
+  {flowPatterns.map((pattern) => (
+    <section id={`flow-${pattern.id}`} class="flow-pattern" aria-labelledby={`title-${pattern.id}`}>
+      <p class="kicker">{pattern.label} · architecture example</p>
+      <h3 id={`title-${pattern.id}`}>{pattern.title}</h3>
+      <p class="flow-description">{pattern.description}</p>
+      <ol class="flow-stages">{pattern.steps.map(([title, text], index) => <li><span class="kicker">0{index + 1}</span><h4>{title}</h4><p>{text}</p></li>)}</ol>
+      <div class="flow-boundary"><p><strong>Failure boundary.</strong> {pattern.boundary}</p><a class="btn-tertiary" href={sitePath(pattern.evidenceUrl)}>{pattern.evidenceLabel} <span aria-hidden="true">↗</span></a></div>
+    </section>
+  ))}
+  <p class="flow-note">These are explorable architecture patterns. No model requests or external actions run on this page.</p>
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-flow-explorer]').forEach((explorer) => {
+    const controls = explorer.querySelector<HTMLElement>('.flow-controls');
+    const buttons = explorer.querySelectorAll<HTMLButtonElement>('[data-pattern]');
+    const panels = explorer.querySelectorAll<HTMLElement>('.flow-pattern');
+    const select = (id: string) => {
+      buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.pattern === id)));
+      panels.forEach((panel) => { panel.hidden = panel.id !== `flow-${id}`; });
+    };
+    if (controls) controls.hidden = false;
+    select('documents');
+    buttons.forEach((button) => button.addEventListener('click', () => select(button.dataset.pattern ?? 'documents')));
+  });
+</script>
+<style>
+  .flow-explorer { border: 1px solid var(--line); background: var(--surface); padding: 2rem; }
+  .flow-controls { display: flex; gap: .6rem; flex-wrap: wrap; padding-bottom: 2rem; }
+  .flow-controls button { min-height: 46px; padding: .7rem 1rem; background: transparent; border: 1px solid var(--line); border-radius: 3px; font-size: .85rem; cursor: pointer; }
+  .flow-controls button[aria-pressed="true"] { color: var(--paper); background: var(--graphite); border-color: var(--graphite); }
+  .flow-pattern + .flow-pattern { margin-top: 2rem; }
+  .flow-pattern h3 { font-family: Georgia, serif; font-size: clamp(1.7rem, 3vw, 2.6rem); margin-top: .7rem; line-height: 1.2; }
+  .flow-description { color: var(--ink-muted); line-height: 1.8; margin-top: 1rem; max-width: 45rem; }
+  .flow-stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; padding-block: 2rem; }
+  .flow-stages li { border-top: 2px solid var(--olive); padding-top: 1rem; }
+  .flow-stages h4 { font-size: 1rem; font-weight: 600; margin-block: .5rem; }
+  .flow-stages p { color: var(--ink-muted); font-size: .85rem; line-height: 1.8; }
+  .flow-boundary { border-top: 1px solid var(--line); padding-top: 1.5rem; display: flex; gap: 2rem; justify-content: space-between; align-items: start; }
+  .flow-boundary p { font-size: .85rem; line-height: 1.8; max-width: 42rem; color: var(--ink-muted); }
+  .flow-boundary a { flex-shrink: 0; }
+  .flow-note { font-size: .75rem; color: var(--ink-muted); margin-top: 1.5rem; line-height: 1.8; }
+  @media(max-width: 959px) { .flow-stages { grid-template-columns: repeat(2, 1fr); } .flow-boundary { flex-direction: column; gap: .7rem; } }
+  @media(max-width: 479px) { .flow-explorer { padding: 1.25rem; } .flow-stages { grid-template-columns: 1fr; gap: 1.3rem; } .flow-controls button { flex: 1 1 auto; } }
+</style>

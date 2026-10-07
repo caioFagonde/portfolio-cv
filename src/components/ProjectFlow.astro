@@ -1,0 +1,51 @@
+---
+import { projectFlows } from '@/data/project-flows';
+import type { Project } from '@/data/projects';
+interface Props { project: Project; }
+const { project } = Astro.props;
+const nodes = projectFlows[project.slug];
+const details = nodes.map((_, index) => project.technicalApproach[index] ?? project.demonstrates[index % project.demonstrates.length]);
+---
+<section id="project-example" class="project-flow" data-project-flow>
+  <div class="flow-intro"><div><p class="kicker">Architecture explorer</p><h2>How the pieces connect.</h2></div><p>Select a part of the diagram to explore the engineering behind it.</p></div>
+  <div class="project-flow-plate">
+    <ol aria-label={`${project.title} architecture`}>
+      {nodes.map((node,index) => <li><button type="button" aria-pressed={index === 0 ? 'true' : 'false'} data-flow-step={index} aria-controls={`flow-detail-${project.slug}`}><span class="project-step-number">0{index+1}</span><span class="flow-node-icon" aria-hidden="true">{['◇','⊞','≋','↗'][index]}</span><strong>{node}</strong></button><span class="flow-connector" aria-hidden="true">→</span></li>)}
+    </ol>
+    <div class="flow-detail" id={`flow-detail-${project.slug}`} role="status" aria-live="polite"><p class="kicker" data-step-label>{nodes[0]}</p><p data-step-detail>{details[0]}</p></div>
+  </div>
+  <noscript><ul class="flow-fallback">{details.map((detail,index) => <li><strong>{nodes[index]}.</strong> {detail}</li>)}</ul></noscript>
+  <div hidden data-flow-details data-details={JSON.stringify(details)}></div>
+</section>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-project-flow]').forEach((flow) => {
+    const details = JSON.parse(flow.querySelector<HTMLElement>('[data-flow-details]')!.dataset.details!) as string[];
+    const buttons = flow.querySelectorAll<HTMLButtonElement>('[data-flow-step]');
+    buttons.forEach((button, index) => button.addEventListener('click', () => {
+      buttons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+      flow.querySelector('[data-step-label]')!.textContent = button.querySelector('strong')!.textContent;
+      flow.querySelector('[data-step-detail]')!.textContent = details[index];
+    }));
+  });
+</script>
+<style>
+  .project-flow { margin-top:3.5rem; }
+  .flow-intro { display:flex; justify-content:space-between; align-items:end; gap:2rem; margin-bottom:1.5rem; }
+  .flow-intro h2 { font:clamp(1.8rem,3vw,2.5rem)/1.15 Georgia,serif; margin-top:.6rem; }
+  .flow-intro > p { max-width:34ch; font-size:.85rem; line-height:1.8; color:var(--ink-muted); }
+  .project-flow-plate { border:1px solid var(--line); background:var(--surface); padding:2rem; }
+  ol { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2rem; list-style:none; }
+  li { position:relative; min-width:0; }
+  button { text-align:left; padding:1rem; width:100%; min-height:10.5rem; display:flex; flex-direction:column; justify-content:space-between; border:1px solid var(--line); background:var(--paper); color:var(--ink); transition:background 150ms; }
+  button:hover { background:var(--paper-soft); }
+  button[aria-pressed="true"] { background:var(--olive); border-color:var(--olive); color:#fffdf7; }
+  .project-step-number { font:.7rem ui-monospace,monospace; }
+  .flow-node-icon { font:2.6rem/1 ui-monospace,monospace; margin:.5rem 0 1rem; }
+  strong { font-size:.9rem; line-height:1.5; }
+  .flow-connector { position:absolute; right:-1.5rem; top:46%; font:1.3rem ui-monospace,monospace; color:var(--olive); }
+  li:last-child .flow-connector { display:none; }
+  .flow-detail { margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--line); min-height:7rem; }
+  .flow-detail > p:last-child { font-size:1rem; line-height:1.8; margin-top:.8rem; max-width:80ch; }
+  .flow-fallback { margin-top:1rem; line-height:1.8; }
+  @media(max-width:650px) { .flow-intro { display:block; } .flow-intro > p { margin-top:1rem; max-width:100%; } .project-flow-plate { padding:1rem; } ol { grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.5rem; } button { min-height:10rem; } li:nth-child(2) .flow-connector { display:none; } .flow-detail { min-height:10rem; } }
+</style>

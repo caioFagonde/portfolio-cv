@@ -1,16 +1,54 @@
 ---
+import { sitePath } from '@/utils/paths';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionHeader from '@/components/SectionHeader.astro';
+import { profile } from '@/data/cv';
 ---
-<BaseLayout title="Contact — Systems Atlas" description="Contact Caio Nahuel for collaboration, research, or engineering work.">
+<BaseLayout title="Contact — Caio Nahuel" description="Contact Caio Nahuel for repo audits, AI engineering workflow setup, full-stack implementation, developer tooling, automation, and coaching.">
   <section class="container-atlas py-14 md:py-20">
-    <div class="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-      <SectionHeader eyebrow="Contact" title="Collaboration starts with the shape of the problem." text="Send a concise note about the system, constraint, dataset, simulation, or research direction. I prefer concrete context over broad pitches." />
-      <div class="atlas-card p-8">
-        <p class="text-lg leading-8 text-ink-700">For research, engineering, or consulting conversations:</p>
-        <a href="mailto:caionahuel@gmail.com?subject=Systems%20Atlas%20contact" class="mt-6 inline-flex rounded-full bg-ink-900 px-6 py-3 font-mono text-xs uppercase tracking-[0.16em] text-paper-50 transition-colors hover:bg-copper-700">Email Caio</a>
-        <div class="mt-10 border-t hairline pt-6 text-sm leading-7 text-ink-600">
-          <p>Useful context: domain, current system, constraints, expected output, data sensitivity, timeline, and whether the work is exploratory or production-bound.</p>
+    <div class="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+      <SectionHeader level="h1"
+        eyebrow="Contact"
+        title="Tell me about your project."
+        text="Describe what you want to build or improve. If there’s an existing application, a link and a few words about the stack are helpful."
+      />
+      <div class="atlas-card p-6 md:p-8">
+        <p class="text-lg leading-8 text-ink-700">For software development, cloud infrastructure, AI agents, or chatbots:</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href={sitePath(`mailto:${profile.email}?subject=Technical%20build%20or%20repo%20review`)} class="btn-primary">Email about a build</a>
+          <a href={sitePath(`mailto:${profile.email}?subject=Repo%20audit%20request`)} class="btn-secondary">Request a repo audit</a>
+        </div>
+
+        <div class="mt-10 grid gap-5 border-t hairline pt-6 md:grid-cols-2">
+          <div>
+            <p class="kicker">Useful context</p>
+            <ul class="mt-4 grid gap-2 text-sm leading-7 text-ink-700">
+              <li>Product, assistant, or workflow you want to build</li>
+              <li>Current stack, knowledge sources, and integrations</li>
+              <li>What is broken, slow, risky, or unclear</li>
+              <li>Where the application will run</li>
+              <li>Timeline, constraints, and data sensitivity</li>
+            </ul>
+          </div>
+          <div>
+            <p class="kicker">Good starting points</p>
+            <ul class="mt-4 grid gap-2 text-sm leading-7 text-ink-700">
+              <li><a class="text-copper-700 underline underline-offset-4" href={sitePath('/ai-systems')}>AI flows, chatbots, and document assistants</a></li>
+              <li>Architecture/codebase audit</li>
+              <li>Web applications and backend services</li>
+              <li><a class="text-copper-700 underline underline-offset-4" href={sitePath('/consulting#cloud-infrastructure')}>Cloud infrastructure and deployment</a></li>
+              <li>Backend/API hardening and validation</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-8 border-t hairline pt-6">
+          <p class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-ink-600">Direct email</p>
+          <a class="mt-2 inline-block text-lg font-medium text-copper-700 hover:text-steel-700" href={sitePath(`mailto:${profile.email}`)}>{profile.email}</a>
+          <div class="mt-5 flex flex-wrap gap-3">
+            <a class="btn-secondary" href={sitePath('/downloads/repo-audit-checklist.md')}>Download audit checklist</a>
+            <a class="btn-tertiary" href={sitePath('/workflow')}>See workflow</a>
+          </div>
         </div>
       </div>
     </div>

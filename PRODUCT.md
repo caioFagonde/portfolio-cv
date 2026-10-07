@@ -32,3 +32,16 @@ Each case must distinguish:
 - production.
 
 Never present speculative research as deployed infrastructure.
+
+## October 2026: AI systems and consulting
+
+AI-flow and chatbot development is now a first-class offer at `/ai-systems`. The scope includes conversation design, document ingestion/OCR, retrieval and citations, typed tool execution, workflow state, integrations, human review, evaluation, deployment, and operations. Coding-agent engineering workflows remain a separate service at `/workflow`.
+
+Recent local work is indexed with source-aware project records, including GeoDocs, Hasselt parcel analysis, RelASP, Personal OS, scientific tooling, source connectors, and report automation. Implementation status and public-demo availability are independent. No confidential client artifacts, new testimonials, production metrics, or publication credentials are introduced.
+
+
+## Current priority and public voice
+
+The user's latest brief is authoritative: lead with software development, cloud infrastructure, AI agents, and AI chatbots; keep aerospace and science as a secondary specialty. OrbProp replaces RelASP as the featured orbital example. `/skills` and its homepage diagram let visitors filter the stack and follow relevant project links.
+
+Descriptions explain what the application or architecture does in direct present tense. Internal progress labels, maturity notes, planned work, review dates, and confidence scores stay out of the public portfolio. This supersedes the earlier requirement to publish maturity distinctions in every case. Internal records remain intact, and no invented client, release, production, deployment, benchmark, or publication claim is introduced. Contact always uses the canonical Gmail address.

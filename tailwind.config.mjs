@@ -4,27 +4,35 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        serif: ['Fraunces', 'Cormorant Garamond', 'Georgia', 'serif'],
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        serif: ['Georgia', 'Iowan Old Style', 'Charter', 'serif'],
+        sans: ['ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'IBM Plex Mono', 'ui-monospace', 'monospace']
       },
       colors: {
         paper: {
-          50: '#fffaf0',
-          100: '#f7eddc',
-          200: '#ead8bd',
-          300: '#d6bc95'
+          50: '#f7f5ef',
+          100: '#f2ecdf',
+          200: '#d8c9ae',
+          300: '#bda886'
         },
         ink: {
-          900: '#1a1410',
-          800: '#2a211b',
-          700: '#403329',
-          600: '#5d4c3f'
+          900: '#191714',
+          800: '#2b2924',
+          700: '#403c35',
+          600: '#575149'
         },
         copper: {
           500: '#b86f3f',
           600: '#965832',
           700: '#704024'
+        },
+        steel: {
+          500: '#4b6470',
+          700: '#2f454e'
+        },
+        olive: {
+          500: '#56664f',
+          700: '#34402f'
         }
       },
       boxShadow: {

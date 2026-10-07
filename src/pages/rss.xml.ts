@@ -1,3 +1,4 @@
+import { sitePath } from '@/utils/paths';
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 
@@ -11,7 +12,7 @@ export async function GET(context: any) {
       title: entry.data.title,
       description: entry.data.summary,
       pubDate: entry.data.date,
-      link: `/research/${entry.slug}/`
+      link: sitePath(`/research/${entry.slug}/`)
     }))
   });
 }

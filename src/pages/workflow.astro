@@ -1,0 +1,130 @@
+---
+import { sitePath } from '@/utils/paths';
+import { profile } from '@/data/cv';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import { engineeringRules, workflowStages } from '@/data/workflow';
+
+const prevents = [
+  'Blind AI edits that never reach a browser.',
+  'Demo-only implementation with hidden failure states.',
+  'Unverified UI that collapses on mobile or long content.',
+  'Vague handoffs where the next engineer has to rediscover the work.',
+  'Brittle API and deployment assumptions that are never exercised.'
+];
+---
+<BaseLayout
+  title="Engineering Workflow - Caio Nahuel"
+  description="A practical engineering workflow for AI-assisted development, runtime QA, screenshots, handoff evidence, and repo hardening."
+>
+  <section class="container-atlas py-14 md:py-20">
+    <div class="grid gap-10 border-b hairline pb-12 lg:grid-cols-[0.98fr_1.02fr] lg:items-end">
+      <div>
+        <p class="kicker">Engineering workflow</p>
+        <h1 class="mt-5 max-w-[11.8em] font-serif text-[clamp(3rem,6.2vw,5.75rem)] leading-[0.95] text-ink-900 text-balance">
+          Engineering workflows with AI in the loop.
+        </h1>
+      </div>
+      <div class="max-w-xl lg:justify-self-end">
+        <p class="text-lg leading-8 text-ink-700">
+          The useful lesson from strong engineering practice is not heroics. It is clear boundaries, small interfaces, fast feedback, boring contracts, and evidence that another person can inspect.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a class="btn-primary" href={sitePath('/consulting#ai-engineering-workflow-setup')}>Discuss workflow setup</a>
+          <a class="btn-secondary" href={sitePath('/repo-audit')}>Request a repo audit</a>
+          <a class="btn-tertiary" href={sitePath('/downloads/agent-qa-checklist.md')}>Download checklist</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-atlas pb-16 md:pb-24">
+    <SectionHeader
+      eyebrow="Working rules"
+      title="Rules that keep implementation reviewable."
+      text="These are the constraints I use when a codebase needs to move quickly without losing testability, design quality, or handoff clarity."
+    />
+    <div class="mt-10 grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+      <article class="atlas-card p-6 text-paper-50 md:p-8" style="background: var(--graphite); border-color: rgba(251, 247, 237, 0.18);">
+        <p class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-paper-200">01 · first rule</p>
+        <h2 class="mt-5 font-serif text-[clamp(2.6rem,5vw,4.4rem)] leading-[0.98] text-paper-50">{engineeringRules[0].title}</h2>
+        <p class="mt-6 text-base font-medium leading-8 text-paper-100">{engineeringRules[0].rule}</p>
+        <p class="mt-5 border-t border-paper-50/18 pt-5 text-sm leading-7 text-paper-100/82">{engineeringRules[0].why}</p>
+      </article>
+      <div class="grid gap-4 md:grid-cols-2">
+        {engineeringRules.slice(1).map((item, index) => (
+          <article class="border-t hairline pt-5">
+            <p class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-copper-700">0{index + 2} · rule</p>
+            <h2 class="mt-4 font-serif text-3xl leading-[1.03] text-ink-900">{item.title}</h2>
+            <p class="mt-4 text-sm font-medium leading-7 text-ink-800">{item.rule}</p>
+            <p class="mt-3 text-sm leading-7 text-ink-700">{item.why}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-rule py-14 md:py-20">
+    <div class="container-atlas grid gap-10 lg:grid-cols-[0.74fr_1.26fr] lg:items-start">
+      <SectionHeader
+        eyebrow="Delivery loop"
+        title="A tight path from scope to evidence."
+        text="The loop is intentionally plain. It keeps AI-assisted work inside a system another engineer can review."
+      />
+      <div class="grid gap-4">
+        {workflowStages.map((stage, index) => (
+          <article class="grid gap-5 border-t hairline py-5 md:grid-cols-[auto_0.6fr_1.2fr_0.72fr] md:items-start">
+            <p class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-copper-700">0{index + 1}</p>
+            <div>
+              <h2 class="font-serif text-3xl leading-[1.02] text-ink-900">{stage.title}</h2>
+              <p class="mt-2 text-sm font-medium leading-6 text-ink-800">{stage.purpose}</p>
+            </div>
+            <ul class="grid gap-2 text-sm leading-7 text-ink-700">
+              {stage.practices.map((practice) => <li>{practice}</li>)}
+            </ul>
+            <div>
+              <p class="kicker">Artifact</p>
+              <p class="mt-3 text-sm leading-7 text-ink-700">{stage.artifact}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-atlas py-16 md:py-24">
+    <div class="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-start">
+      <div>
+        <p class="kicker">What this prevents</p>
+        <h2 class="mt-4 max-w-xl font-serif text-[clamp(2.4rem,4.5vw,4.2rem)] leading-[1.02] text-ink-900">
+          The process is there to remove avoidable ambiguity.
+        </h2>
+        <p class="mt-5 max-w-xl text-base leading-8 text-ink-700">
+          AI-assisted engineering is useful when the repo makes good behavior easy: clear scripts, explicit state, route coverage, screenshot evidence, and written constraints.
+        </p>
+      </div>
+      <div class="grid gap-3">
+        {prevents.map((item, index) => (
+          <div class="grid grid-cols-[auto_1fr] gap-4 border-t hairline py-4">
+            <span class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-copper-700">0{index + 1}</span>
+            <p class="text-sm leading-7 text-ink-700">{item}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-rule py-14">
+    <div class="container-atlas grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+      <div>
+        <p class="kicker">Next step</p>
+        <h2 class="mt-3 max-w-3xl font-serif text-4xl leading-[1.02] text-ink-900 md:text-5xl">Bring a repo that needs faster delivery and stronger evidence.</h2>
+        <p class="mt-5 max-w-2xl text-base leading-8 text-ink-700">A focused setup pass can turn agent instructions, screenshot checks, route coverage, accessibility checks, and handoff rules into a repeatable engineering workflow.</p>
+      </div>
+      <div class="flex flex-wrap gap-3 lg:justify-end">
+        <a class="btn-primary" href={sitePath(`mailto:${profile.email}?subject=AI%20engineering%20workflow%20setup`)}>Discuss workflow setup</a>
+        <a class="btn-secondary" href={sitePath('/repo-audit')}>Audit the repo first</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

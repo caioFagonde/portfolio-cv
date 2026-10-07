@@ -1,0 +1,69 @@
+---
+import { sitePath } from '@/utils/paths';
+import { projectMedia } from '@/data/project-media';
+interface Props { slug: string; }
+const { slug } = Astro.props;
+const images = projectMedia[slug] ?? [];
+---
+{images.length > 0 && <section class="project-gallery" data-gallery aria-label="Project screenshots">
+  <div class="gallery-heading"><p class="kicker">Inside the application</p><p>Open an image for a closer look ↗</p></div>
+  <div class="gallery-images">
+    {images.map((item, index) => <figure class:list={['gallery-item', { 'gallery-lead': index === 0, 'gallery-mobile': item.width < item.height }]}>
+      <a href={sitePath(item.src)} data-gallery-image data-caption={item.caption} aria-label={`Enlarge screenshot: ${item.alt}`}><img src={sitePath(item.src)} width={item.width} height={item.height} alt={item.alt} loading="lazy" /></a>
+      <figcaption><span aria-hidden="true">{String(index + 1).padStart(2, '0')} / </span>{item.caption}</figcaption>
+    </figure>)}
+  </div>
+  <dialog aria-labelledby={`gallery-title-${slug}`}>
+    <div class="gallery-dialog-head"><h2 id={`gallery-title-${slug}`}>Project screenshots</h2><button type="button" data-close class="btn-secondary">Close <span aria-hidden="true">×</span></button></div>
+    <img data-expanded-image alt="" />
+    <p data-expanded-caption></p>
+    <a class="gallery-original" data-original href={sitePath(images[0].src)} target="_blank" rel="noreferrer">Open original image ↗</a>
+    <div class="gallery-dialog-actions"><button type="button" data-previous class="btn-secondary">← Previous</button><span data-position></span><button type="button" data-next class="btn-secondary">Next →</button></div>
+  </dialog>
+</section>}
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
+    const dialog = gallery.querySelector<HTMLDialogElement>('dialog')!;
+    const entries = Array.from(gallery.querySelectorAll<HTMLAnchorElement>('[data-gallery-image]'));
+    let current = 0;
+    const show = (index: number) => {
+      current = (index + entries.length) % entries.length;
+      const entry = entries[current];
+      const image = dialog.querySelector<HTMLImageElement>('[data-expanded-image]')!;
+      image.src = entry.href; image.alt = entry.querySelector('img')!.alt;
+      dialog.querySelector<HTMLAnchorElement>('[data-original]')!.href = entry.href;
+      dialog.querySelector('[data-expanded-caption]')!.textContent = entry.dataset.caption ?? '';
+      dialog.querySelector('[data-position]')!.textContent = `${current + 1} / ${entries.length}`;
+    };
+    entries.forEach((entry, index) => entry.addEventListener('click', (event) => { event.preventDefault(); show(index); dialog.showModal(); }));
+    dialog.querySelector('[data-close]')!.addEventListener('click', () => dialog.close());
+    dialog.querySelector('[data-previous]')!.addEventListener('click', () => show(current - 1));
+    dialog.querySelector('[data-next]')!.addEventListener('click', () => show(current + 1));
+    dialog.addEventListener('keydown', (event) => { if(event.key === 'ArrowRight') { event.preventDefault(); show(current + 1); } if(event.key === 'ArrowLeft') { event.preventDefault(); show(current - 1); } });
+    if(entries.length < 2) dialog.querySelector<HTMLElement>('.gallery-dialog-actions')!.hidden = true;
+    dialog.addEventListener('click', (event) => { if(event.target === dialog) { const rect = dialog.getBoundingClientRect(); if(event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close(); } });
+  });
+</script>
+<style>
+  .project-gallery { margin-top: 3rem; }
+  .gallery-heading { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-bottom:1.25rem; }
+  .gallery-heading > p:last-child { font-size:.8rem; color:var(--ink-muted); }
+  .gallery-images { display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; }
+  .gallery-lead { grid-column:1 / -1; }
+  .gallery-item { min-width:0; margin:0; }
+  .gallery-item a { display:block; background:var(--surface-muted); border:1px solid var(--line); padding:.65rem; }
+  .gallery-item img { width:100%; height:auto; object-fit:contain; max-height:42rem; }
+  .gallery-mobile img { max-height:32rem; }
+  figcaption { font-size:.8rem; line-height:1.8; padding:.9rem .2rem; color:var(--ink-muted); max-width:75ch; }
+  figcaption span { font-family:ui-monospace,monospace; color:var(--olive); }
+  dialog { width:min(96vw,1400px); max-height:94dvh; overflow:auto; border:1px solid var(--line); padding:1.25rem; background:var(--paper); color:var(--ink); }
+  dialog::backdrop { background:rgb(20 23 19 / .85); }
+  .gallery-dialog-head,.gallery-dialog-actions { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+  .gallery-dialog-head h2 { font:1.4rem Georgia,serif; }
+  .gallery-dialog-head button { gap:.5rem; }
+  dialog img { display:block; width:100%; max-height:min(60dvh, calc(94dvh - 16rem)); object-fit:contain; margin:1rem auto; background:var(--surface-muted); }
+  dialog p { font-size:.85rem; line-height:1.7; margin-bottom:1rem; }
+  .gallery-original { display:inline-block; font-size:.8rem; color:var(--copper-dark); text-decoration:underline; text-underline-offset:4px; margin-bottom:1rem; }
+  .gallery-dialog-actions span { font: .8rem ui-monospace,monospace; }
+  @media(max-width:600px) { .gallery-images { grid-template-columns:1fr; } dialog { padding:.75rem; } .gallery-dialog-head h2 { font-size:1.1rem; } }
+</style>

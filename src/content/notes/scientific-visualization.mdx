@@ -1,0 +1,27 @@
+---
+title: "Scientific visualization that keeps the model visible"
+summary: "Orbit workbenches, independent numerical checks, and figures whose coordinate choices and assumptions remain attached."
+date: 2026-10-06
+domains: ["flight-dynamics", "numerical-methods"]
+draft: false
+---
+
+OrbProp brings mission configuration, numerical propagation, and trajectory views into the same workflow. The application has to keep the physical result distinct from the way it is displayed.
+
+## Coordinates belong to the result
+
+A trajectory has units, an epoch, and a reference frame. These are part of the data, alongside position and velocity. When exporting to another application, the coordinate conventions need to remain explicit.
+
+## The camera is a separate system
+
+A view can change its origin, scale, or orientation without changing the propagated state. Camera-relative rendering also avoids losing spatial precision when a scene spans planetary distances.
+
+In the Resurgent Phobos visualization, the spacecraft is enlarged for visibility while the positions and body surface remain at their physical scale. Its phase portrait and distance plots show details that are hard to read from the 3D view alone.
+
+![Spatial trajectory around Phobos with phase and distance plots](/assets/resurgent-phobos.webp)
+
+## A common numerical core
+
+OrbProp’s command line, C API, and Python package use the same engine. Keeping the numerical core separate from the interface makes it easier to compare runs and develop new ways to inspect the results.
+
+[Explore OrbProp](/projects/orbit-trajectory-propagator) and [the scientific library](/projects/resurgent-library).

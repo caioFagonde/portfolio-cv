@@ -17,10 +17,10 @@ links: []
 
 Specialist agents need access to user data and application modules, but unrestricted tool use is not acceptable in professional software.
 
-## Direction
+## Architecture
 
-The right design is a governed harness: typed tools, permission checks, read-only defaults, query guards, source citations, audit traces, and explicit uncertainty about missing evidence.
+The architecture uses typed tools, permission checks, read-only defaults, query guards, source citations, audit traces, and explicit uncertainty about missing evidence.
 
-## Principle
+## Tool access
 
-The agent is not the system. The agent is an interface over controlled tools and evidence artifacts.
+The service checks permissions and query limits before executing a tool. Answers include references to the documents or records used.

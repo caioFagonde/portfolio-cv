@@ -1,0 +1,80 @@
+---
+import { sitePath } from '@/utils/paths';
+interface Props { id?: string; }
+const { id = 'document-example' } = Astro.props;
+const passages = [
+  { page: 1, title: 'Record retention', text: 'Records are kept for seven years after a case is closed. Each record retains its document identifier and source page.' },
+  { page: 2, title: 'Publication review', text: 'A reviewer approves publication after checking the supporting source pages. Assistant suggestions do not change the accepted checklist decision.' },
+  { page: 3, title: 'Missing evidence', text: 'If a required document is missing, the checklist item stays unresolved. The assistant identifies the missing evidence and asks for the document.' }
+];
+---
+<section class="document-example" data-document-example id={id}>
+  <div class="example-head"><div><p class="kicker">Try it / document retrieval</p><h2>Ask. Then check the source.</h2></div><p>A short sample policy, searched in your browser with BM25. Answers quote the matching passage.</p></div>
+  <div class="retrieval-layout">
+    <div class="source-document"><div class="document-topline"><span>REVIEW POLICY</span><span>3 pages · sample document</span></div>{passages.map((passage) => <section data-passage data-page={passage.page} data-text={passage.text} id={`${id}-page-${passage.page}`}><p class="kicker">Page {passage.page}</p><h3>{passage.title}</h3><p>{passage.text}</p></section>)}</div>
+    <div class="retrieval-conversation">
+      <p class="kicker">Questions to try</p>
+      <div class="sample-questions">{['How long are records kept?', 'Who approves publication?', 'What is the project budget?'].map((question) => <button type="button" data-question>{question} ↗</button>)}</div>
+      <form><label for={`${id}-question`}>Your question</label><div class="question-field"><input id={`${id}-question`} name="question" type="text" value="How long are records kept?" maxlength="250" required /><button class="btn-primary" type="submit">Search</button></div></form>
+      <div class="retrieval-answer" role="status" aria-live="polite"><p class="kicker" data-answer-label>Source passage · page 1</p><p data-answer>{passages[0].text}</p><a href={sitePath(`#${id}-page-1`)} data-citation>Check page 1 ↗</a></div>
+      <p class="example-note">Sample data. Local retrieval and quoted passages; no model or external service is called.</p>
+      <noscript><p class="example-note">The source policy and example answer remain readable. Enable JavaScript to search.</p></noscript>
+    </div>
+  </div>
+</section>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-document-example]').forEach((example) => {
+    const form = example.querySelector('form')!;
+    const input = form.querySelector('input')!;
+    const source = Array.from(example.querySelectorAll<HTMLElement>('[data-passage]'));
+    const stop = new Set(['a','an','are','is','the','for','of','to','in','and','after','how','who','what','do','does','it','i','can','my','your']);
+    const tokens = (text: string) => (text.toLowerCase().match(/[a-z0-9]+/g) ?? []).filter((word) => !stop.has(word));
+    const documents = source.map((item) => tokens(item.dataset.text!));
+    const averageLength = documents.reduce((sum, document) => sum + document.length, 0) / documents.length;
+    const search = () => {
+      const query = [...new Set(tokens(input.value))];
+      const scores = documents.map((words) => query.reduce((score, word) => {
+        const frequency = words.filter((token) => token === word).length;
+        const df = documents.filter((document) => document.includes(word)).length;
+        const idf = Math.log(1 + (documents.length - df + .5) / (df + .5));
+        return score + idf * frequency * 2.2 / (frequency + 1.2 * (.25 + .75 * words.length / averageLength));
+      }, 0));
+      const best = scores.indexOf(Math.max(...scores));
+      const passage = source[best];
+      const found = scores[best] > 0;
+      source.forEach((item) => item.classList.toggle('source-match', found && item === passage));
+      example.querySelector('[data-answer-label]')!.textContent = found ? `Source passage · page ${passage.dataset.page}` : 'No supporting passage';
+      example.querySelector('[data-answer]')!.textContent = found ? passage.dataset.text! : 'This sample document does not support an answer. Add the relevant source before answering this question.';
+      const citation = example.querySelector<HTMLAnchorElement>('[data-citation]')!;
+      citation.hidden = !found;
+      if(found) { citation.href = `#${passage.id}`; citation.textContent = `Check page ${passage.dataset.page} ↗`; }
+    };
+    form.addEventListener('submit', (event) => { event.preventDefault(); search(); });
+    example.querySelectorAll<HTMLButtonElement>('[data-question]').forEach((button) => button.addEventListener('click', () => { input.value = button.textContent!.replace(/ ↗$/, ''); search(); }));
+  });
+</script>
+<style>
+  .document-example { margin-top:3.5rem; }
+  .example-head { display:flex; justify-content:space-between; align-items:end; gap:2rem; margin-bottom:1.5rem; }
+  h2 { font:clamp(1.8rem,3vw,2.5rem)/1.15 Georgia,serif; margin-top:.6rem; }
+  .example-head > p { max-width:38ch; font-size:.85rem; line-height:1.8; color:var(--ink-muted); }
+  .retrieval-layout { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--line); background:var(--surface); }
+  .source-document { background:var(--paper-soft); padding:2rem; border-right:1px solid var(--line); }
+  .document-topline { display:flex; justify-content:space-between; flex-wrap:wrap; gap:.7rem; border-bottom:1px solid var(--line); padding-bottom:1rem; font:.65rem ui-monospace,monospace; color:var(--ink-muted); }
+  .source-document section { margin-top:1.25rem; padding:1rem; border:1px solid transparent; scroll-margin-top:6rem; }
+  .source-document section:target,.source-match { background:var(--surface); border-color:var(--olive)!important; }
+  h3 { font:1.25rem Georgia,serif; margin:.5rem 0 .75rem; }
+  .source-document section > p:last-child { font-size:.85rem; line-height:1.8; color:var(--ink-muted); }
+  .retrieval-conversation { padding:2rem; }
+  .sample-questions { display:flex; flex-wrap:wrap; gap:.5rem; margin:1rem 0 1.75rem; }
+  .sample-questions button { border:1px solid var(--line); padding:.55rem .7rem; font-size:.8rem; text-align:left; background:var(--paper); }
+  .sample-questions button:hover { border-color:var(--olive); }
+  label { display:block; font-size:.85rem; font-weight:600; margin-bottom:.6rem; }
+  .question-field { display:flex; gap:.5rem; }
+  input { min-width:0; width:100%; background:var(--paper); border:1px solid var(--line); padding:.7rem; font-size:.85rem; }
+  .retrieval-answer { border-left:3px solid var(--olive); padding:1.25rem; margin-top:1.75rem; background:var(--paper); min-height:12rem; }
+  .retrieval-answer > p:nth-child(2) { font:1.1rem/1.8 Georgia,serif; margin-top:1rem; }
+  .retrieval-answer a { display:inline-block; color:var(--copper-dark); font-size:.8rem; margin-top:1rem; text-decoration:underline; text-underline-offset:4px; }
+  .example-note { font-size:.75rem; line-height:1.8; color:var(--ink-muted); margin-top:1rem; }
+  @media(max-width:767px) { .example-head { display:block; } .example-head > p { max-width:100%; margin-top:1rem; } .retrieval-layout { grid-template-columns:1fr; } .source-document { border-right:0; border-bottom:1px solid var(--line); padding:1rem; } .retrieval-conversation { padding:1.25rem; } }
+</style>

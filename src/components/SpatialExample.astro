@@ -1,0 +1,50 @@
+---
+interface Props { kind: 'map' | 'cloud'; id?: string; }
+const { kind, id = `spatial-${kind}` } = Astro.props;
+const parcels = Array.from({length:60},(_,index) => ({ x: 40 + index%10*50, y:35+Math.floor(index/10)*44, score:(index*37+19)%101 }));
+const points = Array.from({length:900},(_,index) => {
+  const x = (index*137%991)/991, y=(index*83%997)/997;
+  const z = Math.exp(-((x-.5)**2+(y-.5)**2)*12)*.8 + Math.sin(x*16)*.06;
+  return { x:300+(x-y)*240, y:160+(x+y-1)*100-z*110, color:`hsl(${75+z*65} 35% ${48+z*15}%)` };
+});
+---
+<section class="spatial-example" id={id} data-spatial-example data-kind={kind}>
+  <div class="spatial-heading"><div><p class="kicker">Try it / {kind === 'map' ? 'spatial filtering' : 'level of detail'}</p><h2>{kind === 'map' ? 'Change the threshold. See the parcels.' : 'Less detail. Fewer points.'}</h2></div><p>{kind === 'map' ? 'An illustrative parcel grid. Filter by a sample suitability score.' : 'A synthetic terrain point cloud. Change the number of visible samples.'}</p></div>
+  <div class="spatial-layout">
+    <div class="spatial-plate"><svg viewBox="0 0 600 350" role="img" aria-label={kind === 'map' ? 'Sixty schematic parcels colored by a sample suitability score' : 'Projected point cloud of a synthetic hill'}>
+      {kind === 'map' ? <><rect width="600" height="350" fill="#e9e5db"/><path d="M18 305 Q160 265 298 317T595 298" stroke="#a3b3ae" stroke-width="14" fill="none"/>{parcels.map((parcel,index) => <rect data-parcel data-score={parcel.score} x={parcel.x} y={parcel.y} width="42" height="36" fill={parcel.score > 65 ? '#56664f' : parcel.score > 35 ? '#9ea589' : '#c7cbb7'} stroke="#f7f5ef" stroke-width="2"><title>Sample parcel {index+1}: score {parcel.score}</title></rect>)}<text x="40" y="335" fill="#575149" font-family="monospace" font-size="11">SCHEMATIC PARCELS / SAMPLE SCORES</text></> : <><rect width="600" height="350" fill="#252b22"/><path d="M65 170L300 270L535 170M300 270V310" fill="none" stroke="#68785e"/>{points.map((point,index) => <circle data-point data-index={index} cx={point.x.toFixed(2)} cy={point.y.toFixed(2)} r="1.8" fill={point.color}/>)}<text x="32" y="323" fill="#cbd2bd" font-family="monospace" font-size="11">SYNTHETIC TERRAIN / PROJECTED POINTS</text></>}
+    </svg></div>
+    <div class="spatial-controls"><p class="kicker">Explore the data</p><label for={`${id}-range`}>{kind === 'map' ? 'Minimum sample score' : 'Visible detail'}</label><input type="range" id={`${id}-range`} min={kind === 'map' ? 0 : 10} max="100" step={kind === 'map' ? 5 : 10} value={kind === 'map' ? 0 : 100} /><output for={`${id}-range`} data-spatial-output>{kind === 'map' ? '0 / 100 · 60 parcels shown' : '100% · 900 points shown'}</output><div class="spatial-legend">{kind === 'map' ? <><span><i style="background:#56664f"></i>Higher score</span><span><i style="background:#c7cbb7"></i>Lower score</span></> : <><span><i style="background:#afd284"></i>Higher elevation</span><span><i style="background:#768557"></i>Lower elevation</span></>}</div><p class="spatial-note">{kind === 'map' ? 'Sample geometry and scores, independent of the Hasselt dataset. This illustrates the filtering interaction.' : 'SVG projection for this browser example. The project architecture uses WebGL and tiled point-cloud data.'}</p><noscript><p class="spatial-note">Enable JavaScript to change the view.</p></noscript></div>
+  </div>
+</section>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-spatial-example]').forEach((example) => {
+    const range = example.querySelector<HTMLInputElement>('input')!;
+    const map = example.dataset.kind === 'map';
+    const items = example.querySelectorAll<SVGElement>(map ? '[data-parcel]' : '[data-point]');
+    const update = () => {
+      const value = Number(range.value); let count = 0;
+      items.forEach((item,index) => { const shown = map ? Number(item.dataset.score) >= value : index%10 < value/10; item.style.opacity = shown ? '1' : map ? '.12' : '0'; if(shown) count++; });
+      example.querySelector('output')!.textContent = map ? `${value} / 100 · ${count} parcels shown` : `${value}% · ${count} points shown`;
+    };
+    range.addEventListener('input', update);
+  });
+</script>
+<style>
+  .spatial-example { margin-top:3.5rem; }
+  .spatial-heading { display:flex; justify-content:space-between; align-items:end; gap:2rem; margin-bottom:1.5rem; }
+  h2 { font:clamp(1.8rem,3vw,2.5rem)/1.15 Georgia,serif; margin-top:.6rem; }
+  .spatial-heading > p { max-width:36ch; font-size:.85rem; line-height:1.8; color:var(--ink-muted); }
+  .spatial-layout { display:grid; grid-template-columns:1.8fr 1fr; border:1px solid var(--line); background:var(--surface); }
+  .spatial-plate { background:var(--surface-muted); display:grid; align-items:center; }
+  svg { width:100%; height:auto; }
+  .spatial-controls { padding:2rem; }
+  label { display:block; font-weight:600; font-size:.9rem; margin:1.5rem 0 1rem; }
+  input { width:100%; accent-color:var(--olive); min-height:2.75rem; }
+  output { display:block; font:.8rem/1.7 ui-monospace,monospace; margin-top:.7rem; }
+  .spatial-legend { display:grid; gap:.75rem; border-top:1px solid var(--line); padding-top:1rem; margin-top:1.5rem; font-size:.8rem; }
+  .spatial-legend span { display:flex; align-items:center; gap:.6rem; }
+  i { width:.9rem; height:.9rem; border:1px solid var(--line); }
+  .spatial-note { font-size:.75rem; line-height:1.8; color:var(--ink-muted); margin-top:1.25rem; }
+  @media(max-width:767px) { .spatial-heading { display:block; } .spatial-heading > p { max-width:100%; margin-top:1rem; } .spatial-layout { grid-template-columns:1fr; } .spatial-controls { padding:1.25rem; } }
+</style>

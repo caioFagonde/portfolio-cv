@@ -5,16 +5,25 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "build": "pnpm clean && pnpm export:cv && astro check && astro build",
     "preview": "astro preview",
-    "check": "astro check",
+    "check": "pnpm clean && astro check",
+    "typecheck": "pnpm clean && astro check",
+    "lint": "pnpm lint:content",
     "lint:content": "node scripts/validate-content.mjs",
-    "export:cv": "node scripts/export-cv-md.mjs"
+    "test": "pnpm lint:content",
+    "screenshots": "node scripts/capture-screenshots.mjs",
+    "e2e": "playwright test tests/e2e.spec.ts tests/visual-examples.spec.ts --project=chromium",
+    "a11y": "playwright test tests/a11y.spec.ts --project=chromium",
+    "agent:verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm e2e && pnpm a11y && pnpm screenshots",
+    "export:cv": "node scripts/export-cv-md.mjs",
+    "clean": "node scripts/clean.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "@astrojs/mdx": "^4.0.0",
     "@astrojs/react": "^4.0.0",
+    "@astrojs/rss": "^4.0.11",
     "@astrojs/tailwind": "^6.0.0",
     "@react-three/fiber": "^9.0.0",
     "@types/three": "^0.171.0",
@@ -24,10 +33,18 @@
     "react-dom": "^19.0.0",
     "tailwindcss": "^3.4.17",
     "three": "^0.171.0",
-    "typescript": "^5.7.0",
-    "@astrojs/rss": "^4.0.11"
+    "typescript": "^5.7.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26.1.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "prettier": "^3.4.2"
+  },
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22.12.0"
   }
 }

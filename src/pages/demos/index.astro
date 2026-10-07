@@ -1,0 +1,52 @@
+---
+import { sitePath } from '@/utils/paths';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import { projects } from '@/data/projects';
+import DocumentExample from '@/components/DocumentExample.astro';
+import SpatialExample from '@/components/SpatialExample.astro';
+
+const demoProjects = projects.filter((project) => project.liveDemoUrl);
+---
+<BaseLayout title="Demos — Caio Nahuel" description="Browser demos and interactive tools by Caio Nahuel.">
+  <section class="container-atlas py-14 md:py-20">
+    <div class="grid gap-10 border-b hairline pb-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+      <SectionHeader level="h1"
+        eyebrow="Demos"
+        title="Things you can open in the browser."
+        text="Interactive tools and checklists, with links to the projects behind them."
+      />
+      <div class="flex flex-wrap gap-3 lg:justify-end">
+        <a class="btn-secondary" href={sitePath('/projects')}>Project index</a>
+        <a class="btn-secondary" href={sitePath('/lab')}>Lab shelf</a>
+      </div>
+    </div>
+
+    <nav class="example-navigation mt-8" aria-label="Browser examples"><a class="btn-secondary" href="#document-example">Document retrieval ↓</a><a class="btn-secondary" href="#spatial-map">Spatial filtering ↓</a><a class="btn-secondary" href="#spatial-cloud">Point-cloud detail ↓</a></nav>
+    <DocumentExample />
+    <p class="mt-4 text-sm"><a class="btn-tertiary" href={sitePath('/projects/geodocs-document-assistant')}>Explore GeoDocs ↗</a></p>
+    <SpatialExample kind="map" />
+    <p class="mt-4 text-sm"><a class="btn-tertiary" href={sitePath('/projects/hasselt-infill-atlas')}>Explore Hasselt Infill Atlas ↗</a></p>
+    <SpatialExample kind="cloud" />
+    <p class="mt-4 text-sm"><a class="btn-tertiary" href={sitePath('/projects/lidar-webgl-client')}>Explore the LiDAR client architecture ↗</a></p>
+
+    <div class="mt-10 grid gap-4">
+      {demoProjects.map((project) => (
+        <article class="group grid gap-5 border-t hairline py-6 md:grid-cols-[0.8fr_1.2fr_auto] md:items-start">
+          <div>
+            <div class="flex flex-wrap gap-2">
+              <span class="meta-pill">{project.category}</span>
+
+            </div>
+            <h2 class="mt-4 font-serif text-3xl leading-[1.02] text-ink-900 group-hover:text-copper-700">{project.title}</h2>
+          </div>
+          <p class="text-sm leading-7 text-ink-700">{project.description}</p>
+          <div class="flex flex-wrap gap-2 md:justify-end">
+            <a class="btn-primary" href={sitePath(project.liveDemoUrl)}>Open demo</a><a class="btn-secondary" href={sitePath(`/projects/${project.slug}`)}>Project detail</a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+<style>.example-navigation { display:flex; flex-wrap:wrap; gap:.75rem; } section[id] { scroll-margin-top:6rem; }</style>

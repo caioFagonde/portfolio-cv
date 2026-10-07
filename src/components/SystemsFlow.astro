@@ -1,0 +1,70 @@
+---
+const lanes = [
+  {
+    label: '01',
+    title: 'Scientific core',
+    text: 'Aerospace, controls, numerical models, and simulation discipline.',
+    tags: ['C++', 'MATLAB', 'Fortran']
+  },
+  {
+    label: '02',
+    title: 'Spatial data',
+    text: 'Remote sensing, spatial databases, terrain, imagery, and time.',
+    tags: ['PostGIS', 'STAC', 'COG']
+  },
+  {
+    label: '03',
+    title: 'Visual evidence',
+    text: 'Detection, segmentation, tracking, depth, and measurement.',
+    tags: ['OpenCV', 'PyTorch', 'Metrology']
+  },
+  {
+    label: '04',
+    title: 'Specialist agents',
+    text: 'RAG, retrieval, SQL/PostGIS tools, and governed reports.',
+    tags: ['RAG', 'Tools', 'Eval']
+  },
+  {
+    label: '05',
+    title: 'Platform',
+    text: 'Storage, APIs, workers, deployment, and secure runtimes.',
+    tags: ['S3', 'Workers', 'K8s']
+  }
+];
+---
+<div class="atlas-card systems-flow relative overflow-hidden p-5 md:p-7">
+  <div class="grid gap-8 lg:grid-cols-[0.74fr_1.26fr] lg:items-start">
+    <div>
+      <p class="kicker">Technology flow</p>
+      <h3 class="mt-3 max-w-[13em] font-serif text-[clamp(2rem,4.2vw,3.85rem)] leading-[0.96] text-ink-900">From research motifs to software systems.</h3>
+      <p class="mt-4 max-w-[38ch] text-sm leading-7 text-ink-600 md:text-[0.95rem]">
+        A compact map of how the portfolio ties together: physical models, spatial evidence, visual measurement, specialist agents, and deployable infrastructure.
+      </p>
+    </div>
+
+    <div class="relative">
+      <svg viewBox="0 0 900 95" preserveAspectRatio="none" class="pointer-events-none absolute left-0 right-0 top-[2.6rem] hidden h-12 w-full md:block" aria-hidden="true">
+        <path class="systems-flow-line" d="M 18 48 C 135 22 205 70 320 48 C 445 24 510 72 620 48 C 735 26 805 64 882 48" />
+        <circle class="systems-flow-dot" r="4">
+          <animateMotion dur="8s" repeatCount="indefinite" path="M 18 48 C 135 22 205 70 320 48 C 445 24 510 72 620 48 C 735 26 805 64 882 48" />
+        </circle>
+      </svg>
+
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {lanes.map((lane, index) => (
+          <article class="flow-step min-h-[12.5rem]">
+            <div class="flex items-center justify-between gap-3">
+              <span class="flow-step-number">{lane.label}</span>
+              <span class="font-mono text-[0.55rem] uppercase tracking-[0.14em] text-copper-700">{index === lanes.length - 1 ? 'Ship' : 'Feed'}</span>
+            </div>
+            <h4 class="mt-5 font-serif text-[1.65rem] leading-[0.98] text-ink-900">{lane.title}</h4>
+            <p class="mt-3 text-[0.84rem] leading-6 text-ink-600">{lane.text}</p>
+            <div class="mt-4 flex flex-wrap gap-1.5">
+              {lane.tags.map((tag) => <span class="rounded-[0.45rem] bg-paper-100/85 px-2 py-1 font-mono text-[0.50rem] uppercase tracking-[0.11em] text-ink-600">{tag}</span>)}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>

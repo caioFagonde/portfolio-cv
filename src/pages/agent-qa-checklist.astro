@@ -1,0 +1,53 @@
+---
+import { sitePath } from '@/utils/paths';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+
+const checks = [
+  ['Before coding', 'Read the repository, identify the framework, routes, styling system, scripts, deployment assumptions, and current worktree state.'],
+  ['Implementation', 'Keep edits scoped, preserve existing content, use typed data where possible, and avoid generic AI-looking copy or UI patterns.'],
+  ['Runtime', 'Start the app, open affected routes in a real browser, verify navigation, and inspect default and constrained states.'],
+  ['Screenshots', 'Capture desktop, laptop, tablet landscape, tablet portrait, and mobile screenshots for meaningful routes.'],
+  ['Visual review', 'Check spacing, hierarchy, wrapping, contrast, CTA priority, mobile navigation, empty/unavailable states, and generic design tells.'],
+  ['Accessibility', 'Check semantic structure, focus visibility, meaningful link text, heading order, and critical axe violations.'],
+  ['Backend/API', 'If a backend exists, test success, empty, invalid, unauthorized, and failure cases with development credentials only.'],
+  ['Handoff', 'Report commands, screenshots, viewports, issues found/fixed, limitations, and next-agent instructions.']
+];
+---
+<BaseLayout title="Agent QA Checklist — Caio Nahuel" description="A practical QA checklist for AI-assisted engineering workflows, visual verification, accessibility checks, backend/API validation, and handoff evidence.">
+  <section class="container-atlas py-14 md:py-20">
+    <div class="grid gap-10 border-b hairline pb-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+      <SectionHeader level="h1"
+        eyebrow="Agent QA checklist"
+        title="A simple rule: the agent must produce evidence, not just code."
+        text="This checklist is meant for Claude Code, Codex, and similar coding agents working inside real repositories. It is intentionally practical and runtime-focused."
+      />
+      <div class="flex flex-wrap gap-3 lg:justify-end">
+        <a class="btn-primary" href={sitePath('/projects/agent-qa-harness')}>View harness project</a>
+        <a class="btn-secondary" href={sitePath('/consulting#ai-engineering-workflow-setup')}>Workflow setup</a>
+        <a class="btn-tertiary" href={sitePath('/downloads/agent-qa-checklist.md')}>Download markdown</a>
+      </div>
+    </div>
+
+    <div class="mt-10 grid gap-4">
+      {checks.map(([title, text], index) => (
+        <section class="grid gap-4 border-t hairline py-5 md:grid-cols-[auto_0.7fr_1.3fr] md:items-start">
+          <p class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-copper-700">0{index + 1}</p>
+          <h2 class="font-serif text-2xl leading-tight text-ink-900">{title}</h2>
+          <p class="text-sm leading-7 text-ink-700">{text}</p>
+        </section>
+      ))}
+    </div>
+
+    <div class="atlas-card mt-10 p-6">
+      <p class="kicker">Definition of done</p>
+      <p class="mt-4 max-w-3xl text-base leading-8 text-ink-700">
+        The work is done when the app runs, affected routes were opened, screenshots were captured and reviewed, visible defects were fixed, applicable lint/type/test/a11y checks ran, backend/API checks were handled or marked not applicable, and the handoff documents the evidence.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a class="btn-secondary" href={sitePath('/workflow')}>See the engineering workflow</a>
+        <a class="btn-tertiary" href={sitePath('/repo-audit')}>Review repo audit scope</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

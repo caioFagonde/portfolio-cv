@@ -1,17 +1,33 @@
 ---
+import { sitePath } from '@/utils/paths';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionHeader from '@/components/SectionHeader.astro';
+import { projects } from '@/data/projects';
+
+const demoProjects = projects.filter((project) => project.liveDemoUrl);
 ---
-<BaseLayout title="Lab — Systems Atlas" description="Interactive experiments and prototypes.">
+<BaseLayout title="Lab and demos — Caio Nahuel" description="Web demos, experiments, prototypes, and project artifacts by Caio Nahuel.">
   <section class="container-atlas py-14 md:py-20">
-    <SectionHeader eyebrow="Lab" title="Small instruments for live research." text="This section is reserved for WebGL sketches, map demos, compression experiments, measurement visualizers, and agent traces. The first public release keeps the lab quiet until demos are worth showing." />
-    <div class="mt-12 grid gap-5 md:grid-cols-3">
-      {['WebGL atlas studies', 'Geospatial tile viewers', 'Measurement overlays'].map((item) => (
-        <div class="atlas-card p-6">
-          <p class="kicker">planned</p>
-          <h2 class="mt-4 font-serif text-3xl tracking-[-0.05em]">{item}</h2>
-          <p class="mt-4 text-sm leading-7 text-ink-600">A future interactive exhibit with code, notes, and careful status labeling.</p>
-        </div>
+    <SectionHeader level="h1"
+      eyebrow="Lab"
+      title="Browser tools & experiments."
+      text="Explore browser tools and interactive examples from my projects."
+    />
+    <div class="mt-8 border-t hairline pt-6"><p class="text-ink-700 leading-8 max-w-2xl">Search a sample document with citations, filter a parcel grid, and change a point cloud’s level of detail.</p><a class="btn-primary mt-5" href={sitePath('/demos')}>Try the browser examples ↗</a></div>
+    <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {demoProjects.map((project) => (
+        <article class="atlas-card p-6">
+          <div class="flex flex-wrap gap-2">
+            <span class="meta-pill">{project.category}</span>
+            <span class="meta-pill">Browser tool</span>
+          </div>
+          <h2 class="mt-5 font-serif text-3xl leading-[1.02] text-ink-900">{project.title}</h2>
+          <p class="mt-4 text-sm leading-7 text-ink-700">{project.description}</p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a class="btn-secondary" href={sitePath(`/projects/${project.slug}`)}>Project detail</a>
+            <a class="btn-primary" href={sitePath(project.liveDemoUrl)}>Open demo</a>
+          </div>
+        </article>
       ))}
     </div>
   </section>

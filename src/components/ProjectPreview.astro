@@ -1,0 +1,19 @@
+---
+import { sitePath } from '@/utils/paths';
+import { projectMedia } from '@/data/project-media';
+import { projectFlows } from '@/data/project-flows';
+interface Props { slug: string; }
+const { slug } = Astro.props;
+const image = projectMedia[slug]?.[0];
+const nodes = projectFlows[slug];
+---
+<div class="project-preview">
+{image ? <img src={sitePath(image.src)} alt={image.alt} width={image.width} height={image.height} loading="lazy" /> : <div class="preview-diagram" aria-label={`${nodes.join(' → ')} architecture diagram`} role="img"><svg viewBox="0 0 480 270" fill="none" aria-hidden="true"><path d="M48 64H220V206H430M220 64H430M48 206H220" stroke="#829078" stroke-width="1.5"/><circle cx="220" cy="135" r="44" stroke="#829078"/><circle cx="220" cy="135" r="30" stroke="#829078" stroke-dasharray="3 6"/><path d="M205 135h30m-15-15v30" stroke="#e9dec9"/><circle cx="48" cy="64" r="5" fill="#e9dec9"/><circle cx="430" cy="206" r="5" fill="#e9dec9"/>{nodes.map((node,index) => <g><rect x={index%2 === 0 ? 8 : 288} y={index < 2 ? 35 : 177} width="180" height="48" fill="#30362c" stroke="#829078"/><text x={index%2 === 0 ? 98 : 378} y={index < 2 ? 64 : 206} fill="#f7f5ef" text-anchor="middle" font-size="12" font-family="monospace">{node}</text></g>)}</svg><span>Architecture / {slug.includes('os') ? 'workspace & sync' : 'system flow'}</span></div>}
+</div>
+<style>
+  .project-preview { background:var(--surface-muted); overflow:hidden; border:1px solid var(--line); }
+  img { width:100%; height:auto; aspect-ratio:16/10; object-fit:contain; }
+  .preview-diagram { background:#252b22; color:var(--paper); padding:.75rem; }
+  svg { width:100%; height:auto; }
+  span { display:block; text-align:center; font: .65rem ui-monospace,monospace; color:#cbd2bd; margin:.25rem 0 .5rem; }
+</style>

@@ -1,0 +1,53 @@
+---
+import { sitePath } from '@/utils/paths';
+import ProjectPreview from '@/components/ProjectPreview.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { projects, projectCategories } from '@/data/projects';
+import { githubRepoSignals, githubSnapshot } from '@/data/github';
+const featured = projects.find((p) => p.slug === 'foundry-platform')!;
+---
+<BaseLayout title="Projects — Caio Nahuel" description="Recent AI assistants, geospatial tools, software platforms, scientific computing, and developer tooling. Architecture, integrations, and technical details.">
+  <section class="container-atlas page-intro"><p class="kicker">Projects & experiments</p><h1>Projects across<br /><span class="hero-emphasis">AI, software & science.</span></h1><p class="intro">Applications, cloud infrastructure, AI agents, and developer tools, alongside my scientific and geospatial work.</p><div class="hero-actions"><a class="btn-secondary" href="#project-index">Browse projects</a><a class="btn-tertiary" href={sitePath('/demos')}>Demos & experiments ↗</a></div></section>
+  <section class="container-atlas pb-16">
+    <a class="project-feature software-spotlight" href={sitePath('/projects/foundry-platform')}><ProjectPreview slug="foundry-platform" /><div><p class="kicker">Software & infrastructure</p><h2>{featured.title}</h2><p>{featured.description}</p><span class="btn-tertiary mt-5">Explore the platform ↗</span></div></a>
+  </section>
+  <section id="project-index" class="container-atlas pb-16">
+    <div class="section-heading"><div><p class="kicker">Project index</p><h2>Browse the projects.</h2><p>Search by tool, language, or subject.</p></div></div>
+    <div class="project-filters" hidden data-project-filters><label>Search projects<input type="search" id="project-search" placeholder="Try retrieval, geospatial, Rust…" /></label><label>Discipline<select id="project-category"><option value="all">All disciplines</option>{projectCategories.map((category) => <option value={category}>{category}</option>)}</select></label><p id="project-count" role="status" aria-live="polite">{projects.length} projects</p><button type="button" class="btn-secondary" id="project-reset">Reset filters</button></div>
+    <div class="work-list" id="project-list">{projects.map((project) => <a class="work-row visual-work-row" href={sitePath(`/projects/${project.slug}`)} data-project data-category={project.category} data-search={`${project.title} ${project.description} ${project.tags.join(' ')} ${project.stack.join(' ')}`.toLowerCase()}><ProjectPreview slug={project.slug} /><div><h3>{project.title}</h3><span class="work-category">{project.category}</span></div><div><p>{project.description}</p><div class="mt-3 flex flex-wrap gap-2">{project.stack.slice(0,4).map((item) => <span class="meta-pill">{item}</span>)}</div></div><span class="work-status"><span class="work-arrow" aria-hidden="true">↗</span></span></a>)}</div>
+    <p id="no-projects" class="py-8 text-ink-600" hidden>No projects match these filters. Try a different term or reset the filters.</p>
+  </section>
+  <section class="section-rule editorial-section"><div class="container-atlas"><div class="section-heading"><div><p class="kicker">Public GitHub archive</p><h2>More code on GitHub.</h2><p>Applications, libraries, and automation from my public repositories.</p></div><a class="btn-tertiary" href={sitePath(githubSnapshot.profileUrl)} target="_blank" rel="noreferrer">GitHub profile ↗</a></div><div class="repo-ledger">{githubRepoSignals.map((repo) => <a href={sitePath(repo.url)} target="_blank" rel="noreferrer"><p class="kicker">{repo.label}</p><h3 class="mt-2">{repo.name} ↗</h3><p>{repo.signal}</p><div class="mt-4 flex flex-wrap gap-2">{repo.stack.slice(0,3).map((item) => <span class="meta-pill">{item}</span>)}</div></a>)}</div></div></section>
+</BaseLayout>
+<script>
+  const controls = document.querySelector<HTMLElement>('[data-project-filters]');
+  const search = document.querySelector<HTMLInputElement>('#project-search');
+  const category = document.querySelector<HTMLSelectElement>('#project-category');
+  const count = document.querySelector<HTMLElement>('#project-count');
+  const empty = document.querySelector<HTMLElement>('#no-projects');
+  const entries = document.querySelectorAll<HTMLElement>('[data-project]');
+  if (controls && search && category && count && empty) {
+    controls.hidden = false;
+    const update = () => {
+      const terms = search.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      let total = 0;
+      entries.forEach((entry) => { const match = (category.value === 'all' || category.value === entry.dataset.category) && terms.every((term) => entry.dataset.search?.includes(term)); entry.hidden = !match; if(match) total++; });
+      count.textContent = `${total} ${total === 1 ? 'project' : 'projects'}`; empty.hidden = total > 0;
+    };
+    search.addEventListener('input', update); category.addEventListener('change', update);
+    document.querySelector('#project-reset')?.addEventListener('click', () => { search.value = ''; category.value = 'all'; update(); search.focus(); });
+  }
+</script>
+<style>
+.project-feature { display: grid; grid-template-columns: 1.2fr 1fr; border: 1px solid var(--line); background: var(--surface); }
+.project-feature img { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.project-feature > div { padding: 2.5rem; align-self: center; }
+.project-feature h2 { font-family: Georgia, serif; font-size: clamp(2rem, 3vw, 2.8rem); line-height: 1.15; margin-top: 1rem; }
+.project-feature p:not(.kicker) { color: var(--ink-muted); font-size: .92rem; line-height: 1.8; margin-top: 1.3rem; }
+@media(max-width: 767px) { .project-feature { grid-template-columns: 1fr; } .project-feature > div { padding: 1.5rem; } }
+.platform-stack { background: var(--graphite); color: var(--paper); }
+.platform-stack .kicker { color: #cbd2bd; }
+.platform-layer { border: 1px solid #79806a; padding: 1rem; margin-top: 1.2rem; position: relative; font-size: 1rem; }
+.platform-layer + .platform-layer::before { content: ''; position: absolute; height: 1.2rem; width: 1px; background: #a6af94; top: -1.25rem; left: 50%; }
+.platform-layer span { display: block; font-size: .78rem; color: #cbd2bd; margin-top: .5rem; }
+</style>

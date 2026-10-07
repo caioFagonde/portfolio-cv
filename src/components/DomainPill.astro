@@ -3,6 +3,6 @@ import { domains } from '@/data/domains';
 const { id } = Astro.props;
 const domain = domains.find((d) => d.id === id);
 ---
-<span class="inline-flex items-center rounded-full border hairline bg-paper-50/50 px-3 py-1 font-mono text-[0.66rem] uppercase tracking-[0.12em] text-ink-700">
+<span class="inline-flex items-center border hairline bg-paper-50/50 px-2.5 py-1 font-mono text-[0.60rem] uppercase tracking-[0.12em] text-ink-700">
   {domain?.title ?? id}
 </span>

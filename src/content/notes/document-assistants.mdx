@@ -1,0 +1,25 @@
+---
+title: "Document assistants: citations, suggestions, and human decisions"
+summary: "What recent document-workflow implementation taught me about keeping extraction, retrieval, and evidence acceptance separate."
+date: 2026-10-06
+domains: ["agentic-systems", "systems-infrastructure"]
+draft: false
+---
+
+A document assistant should make the source easier to inspect. Recent GeoDocs work connects a question to retrieved passages, page references, and a review workflow.
+
+## Three separate states
+
+Extraction produces text with a document and page address. Retrieval selects relevant passages. Review determines whether those passages establish what the workflow requires. Completing one stage does not complete the next.
+
+The retrieval pipeline uses BM25 over overlapping page passages. Structured answers carry document IDs, page numbers, and excerpts. The application checks that a citation belongs to the retrieved candidates and that the excerpt occurs in its source passage.
+
+## Missing evidence is a result
+
+A question without supporting material should produce a visible missing-evidence state. A polished answer cannot compensate for an absent source. The same principle applies when OCR cannot recover legible text.
+
+## Suggestions are not decisions
+
+A model can suggest a checklist status. A person accepts or rejects that suggestion. Permission checks and audit events belong to the service handling the decision, rather than to a prompt asking the assistant to be careful.
+
+[Explore GeoDocs](/projects/geodocs-document-assistant) or [review AI system development](/ai-systems).

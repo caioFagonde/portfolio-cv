@@ -1,0 +1,124 @@
+---
+import { sitePath } from '@/utils/paths';
+import { skillBranches, skillFilters } from '@/data/skills';
+interface Props { branchLevel?: 'h2' | 'h3'; }
+const BranchHeading = Astro.props.branchLevel ?? 'h3';
+const total = new Set(skillBranches.flatMap((branch) => branch.skills)).size;
+---
+<div class="skills-map" data-skills-map>
+  <div class="skills-controls" data-skills-controls hidden>
+    <div class="skills-filter-buttons" role="group" aria-label="Filter skills by area">
+      {skillFilters.map((filter) => <button type="button" data-skill-filter={filter.id} aria-pressed={filter.id === 'all'}>{filter.label}</button>)}
+    </div>
+    <label class="skills-search">Find a skill<input type="search" data-skills-search placeholder="Python, Terraform, RAG…" /></label>
+  </div>
+  <div class="skills-summary"><p class="kicker">Capability map</p><p data-skills-count role="status" aria-live="polite">{total} skills across {skillBranches.length} areas</p><button type="button" data-skills-reset hidden>Reset</button></div>
+  <div class="skills-graph" data-skills-graph>
+    <svg class="skills-connectors" aria-hidden="true" data-skills-connectors></svg>
+    <div class="skills-root" data-skills-root><span class="skills-root-mark" aria-hidden="true">cn.</span><div><strong>Caio Nahuel</strong><span>Software · Cloud · AI</span></div></div>
+    <div class="skills-branches">
+      {skillBranches.map((branch, index) => <section class="skill-branch" data-skill-branch data-filters={branch.filters.join(' ')} data-area={branch.title}>
+        <header><span class="skill-branch-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><BranchHeading>{branch.title}</BranchHeading></header>
+        <p>{branch.description}</p>
+        <ul class="skill-nodes">{branch.skills.map((skill) => <li data-skill-node>{skill}</li>)}</ul>
+        <a href={sitePath(branch.href)}>{branch.link}<span aria-hidden="true"> ↗</span></a>
+      </section>)}
+    </div>
+    <p class="skills-empty" data-skills-empty hidden>No skills match this search. Try another term or reset the filters.</p>
+  </div>
+  <p class="skills-map-note">Lines connect each area to the profile. Project links show where the skills are used.</p>
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-skills-map]').forEach((map) => {
+    const search = map.querySelector<HTMLInputElement>('[data-skills-search]')!;
+    const buttons = map.querySelectorAll<HTMLButtonElement>('[data-skill-filter]');
+    const branches = [...map.querySelectorAll<HTMLElement>('[data-skill-branch]')];
+    const graph = map.querySelector<HTMLElement>('[data-skills-graph]')!;
+    const root = map.querySelector<HTMLElement>('[data-skills-root]')!;
+    const svg = map.querySelector<SVGSVGElement>('[data-skills-connectors]')!;
+    const reset = map.querySelector<HTMLButtonElement>('[data-skills-reset]')!;
+    let active = 'all';
+    const draw = () => {
+      const box = graph.getBoundingClientRect();
+      const origin = root.getBoundingClientRect();
+      const x = origin.left + origin.width / 2 - box.left;
+      const y = origin.bottom - box.top;
+      svg.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+      svg.replaceChildren();
+      for (const branch of branches.filter((b) => !b.hidden)) {
+        const target = branch.getBoundingClientRect();
+        const bx = target.left + target.width / 2 - box.left;
+        const by = target.top - box.top;
+        // Route through the gutters between columns, keeping lines outside the nodes.
+        const gutter = target.left - box.left - 12;
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const firstRow = by < y + 100;
+        path.setAttribute('d', firstRow ? `M ${x} ${y} V ${y + 18} H ${bx} V ${by}` : `M ${x} ${y} V ${y + 18} H ${gutter} V ${by - 16} H ${bx} V ${by}`);
+        svg.append(path);
+      }
+    };
+    const update = () => {
+      const query = search.value.trim().toLowerCase();
+      const found = new Set<string>();
+      let areas = 0;
+      for (const branch of branches) {
+        const areaMatches = active === 'all' || branch.dataset.filters?.split(' ').includes(active);
+        const titleMatches = Boolean(query) && branch.dataset.area?.toLowerCase().includes(query);
+        let matches = 0;
+        branch.querySelectorAll<HTMLElement>('[data-skill-node]').forEach((node) => {
+          const match = areaMatches && (!query || titleMatches || node.textContent!.toLowerCase().includes(query));
+          node.hidden = !match;
+          if (match) { matches++; found.add(node.textContent!); }
+        });
+        branch.hidden = matches === 0;
+        if (matches) areas++;
+      }
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.skillFilter === active)));
+      graph.dataset.visibleAreas = String(areas);
+      map.querySelector<HTMLElement>('[data-skills-count]')!.textContent = `${found.size} ${found.size === 1 ? 'skill' : 'skills'} across ${areas} ${areas === 1 ? 'area' : 'areas'}`;
+      map.querySelector<HTMLElement>('[data-skills-empty]')!.hidden = areas > 0;
+      reset.hidden = active === 'all' && !query;
+      requestAnimationFrame(draw);
+    };
+    map.querySelector<HTMLElement>('[data-skills-controls]')!.hidden = false;
+    buttons.forEach((button) => button.addEventListener('click', () => { active = button.dataset.skillFilter!; update(); }));
+    search.addEventListener('input', update);
+    reset.addEventListener('click', () => { active = 'all'; search.value = ''; update(); search.focus(); });
+    new ResizeObserver(draw).observe(graph);
+    document.fonts.ready.then(draw);
+    update();
+  });
+</script>
+<style>
+.skills-map { border: 1px solid var(--line); background: #f0f0e8; padding: clamp(1rem, 3vw, 2rem); }
+.skills-controls { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: end; padding-bottom: 1.5rem; border-bottom: 1px solid #c8cdbd; }
+.skills-filter-buttons { display: flex; flex-wrap: wrap; gap: .5rem; flex: 1 1 500px; }
+.skills-filter-buttons button { cursor: pointer; min-height: 44px; padding: .65rem .95rem; font-size: .85rem; border: 1px solid #bcc3ad; background: var(--paper); border-radius: 3px; color: var(--ink); }
+.skills-filter-buttons button[aria-pressed="true"] { background: var(--olive); color: white; border-color: var(--olive); }
+.skills-search { display: grid; gap: .5rem; font-size: .78rem; flex: 1 1 200px; max-width: 300px; }
+.skills-search input { width: 100%; min-height: 44px; padding: .65rem .8rem; border: 1px solid #bcc3ad; border-radius: 3px; background: var(--paper); color: var(--ink); }
+.skills-summary { display: flex; align-items: center; flex-wrap: wrap; gap: .8rem 1.5rem; margin-block: 1.5rem; font-size: .8rem; color: var(--ink-muted); }
+.skills-summary button { margin-left: auto; cursor: pointer; text-decoration: underline; min-height: 44px; padding: .5rem; }
+.skills-graph { position: relative; }
+.skills-connectors { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.skills-connectors :global(path) { stroke: #a4af94; stroke-width: 1.3; fill: none; }
+.skills-root { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: .9rem; width: fit-content; min-width: 240px; margin: 0 auto 2.8rem; padding: 1rem 1.5rem; background: var(--graphite); color: var(--paper); border-radius: 4px; }
+.skills-root-mark { font: 2rem Georgia, serif; color: #d3dbbe; }
+.skills-root strong { font-size: .93rem; display: block; font-weight: 500; }
+.skills-root div > span { font-size: .72rem; color: #cbd2bf; display: block; margin-top: .2rem; }
+.skills-branches { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem 1.5rem; position: relative; }
+.skills-graph[data-visible-areas="1"] .skills-branches { grid-template-columns: 1fr; max-width: 34rem; margin-inline: auto; }
+.skills-graph[data-visible-areas="2"] .skills-branches { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 52rem; margin-inline: auto; }
+.skill-branch { background: var(--paper); border: 1px solid #bac3ad; border-top: 3px solid var(--olive); padding: 1.25rem; position: relative; min-width: 0; }
+.skill-branch header { display: flex; gap: .7rem; align-items: baseline; }
+.skill-branch-index { font: .65rem ui-monospace, monospace; color: var(--copper-dark); }
+.skill-branch :is(h2,h3) { font: 1.35rem/1.25 Georgia, serif; }
+.skill-branch > p { font-size: .8rem; line-height: 1.7; color: var(--ink-muted); margin: .7rem 0 1.2rem; }
+.skill-nodes { display: flex; gap: .45rem; flex-wrap: wrap; }
+.skill-nodes li { font-size: .75rem; line-height: 1.55; padding: .3rem .55rem; background: #e9eddf; border: 1px solid #d0d7c3; border-radius: 2px; overflow-wrap: anywhere; }
+.skill-branch > a { display: inline-block; margin-top: 1.1rem; font-size: .8rem; color: var(--olive); text-decoration: underline; text-underline-offset: 3px; padding-block: .35rem; }
+.skills-map-note { font-size: .75rem; color: var(--ink-muted); margin-top: 1.5rem; line-height: 1.7; }
+.skills-empty { padding: 2rem 0; text-align: center; font-size: .9rem; }
+@media(max-width: 1100px) { .skills-branches { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media(max-width: 650px) { .skills-branches, .skills-graph[data-visible-areas="2"] .skills-branches { grid-template-columns: 1fr; } .skills-filter-buttons { flex-basis: 100%; } .skills-search { max-width: none; } .skills-root { min-width: 0; width: 100%; } .skills-map { padding-inline: 1rem; } }
+</style>

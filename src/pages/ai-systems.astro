@@ -1,0 +1,44 @@
+---
+import { sitePath } from '@/utils/paths';
+import { profile } from '@/data/cv';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AIBlueprint from '@/components/AIBlueprint.astro';
+import FlowExplorer from '@/components/FlowExplorer.astro';
+import { aiCapabilities, aiLifecycle } from '@/data/ai';
+---
+<BaseLayout title="AI Systems, Flows & Chatbots — Caio Nahuel" description="Design and development of chatbots, document assistants, RAG, tool-using agents, and AI workflows: integrations, evaluation, human review, deployment, and operations.">
+  <section class="container-atlas page-intro">
+    <div class="hero-grid">
+      <div><p class="kicker">AI systems · flows · chatbots</p><h1>AI agents<br />& <span class="hero-emphasis">chatbots.</span></h1><p class="intro">I build document assistants, support chatbots, and agents that use your APIs and databases. I handle the conversation flow, retrieval, integrations, interface, and cloud deployment.</p><div class="hero-actions"><a class="btn-primary" href={sitePath(`mailto:${profile.email}?subject=AI%20flow%20or%20chatbot%20project`)}>Discuss an AI system</a><a class="btn-secondary" href="#patterns">Explore flow patterns</a></div></div>
+      <AIBlueprint />
+    </div>
+  </section>
+  <section class="ai-feature editorial-section">
+    <div class="container-atlas split-section">
+      <div><p class="kicker">What I can build</p><h2>From the chat interface to the backend.</h2><p class="intro">The work includes document ingestion, search, model calls, tools, and user permissions. I also test how the assistant responds when a source is missing or an API fails.</p><a class="btn-tertiary mt-6" href={sitePath('/projects/geodocs-document-assistant')}>See document-assistant work ↗</a></div>
+      <div>{aiCapabilities.map((item) => <div class="capability-row"><h3>{item.title}</h3><p>{item.text}</p></div>)}</div>
+    </div>
+  </section>
+  <section id="patterns" class="container-atlas editorial-section">
+    <div class="section-heading"><div><p class="kicker">Explore the architecture</p><h2>Three common ways to use an assistant.</h2><p>Choose a flow to see how the conversation connects to the application.</p></div></div>
+    <FlowExplorer />
+  </section>
+  <section class="container-atlas editorial-section border-t hairline">
+    <div class="section-heading"><div><p class="kicker">Development scope</p><h2>What an engagement covers.</h2><p>We choose the depth of each stage around your users, data, existing stack, and operational constraints.</p></div><a class="btn-secondary" href={sitePath('/downloads/ai-system-planning-checklist.md')} download>Download planning checklist</a></div>
+    {aiLifecycle.map((stage, index) => <article class="lifecycle-row"><span class="work-number">0{index + 1}</span><h3>{stage.title}</h3><div><p>{stage.text}</p><p class="output">{stage.output}</p></div></article>)}
+  </section>
+  <section class="section-rule editorial-section">
+    <div class="container-atlas split-section">
+      <div><p class="kicker">Relevant work</p><h2>A few examples from my work.</h2></div>
+      <div>{[
+        ['GeoDocs document assistant', 'Reads documents, answers questions with page references, and sends suggestions to a reviewer.', '/projects/geodocs-document-assistant'],
+        ['Agentic Cortex', 'Specialist agents connected to documents, SQL/PostGIS, and reports through typed tools.', '/projects/agentic-cortex'],
+        ['Personal OS', 'Connects research, knowledge, device synchronization, and authorized commands across services.', '/projects/personal-os']
+      ].map(([title, text, href]) => <a class="service-link block" href={sitePath(href)}><h3 class="font-serif text-2xl">{title} ↗</h3><p class="mt-3 text-sm leading-7 text-ink-600">{text}</p></a>)}</div>
+    </div>
+  </section>
+  <section class="container-atlas editorial-section split-section">
+    <div><p class="kicker">Your project</p><h2>Tell me what you want to automate.</h2></div>
+    <div><p class="intro">A short description of the users, documents, and systems is enough to start. An example question or task helps me understand what the assistant needs to do.</p><div class="hero-actions"><a class="btn-primary" href={sitePath(`mailto:${profile.email}?subject=AI%20flow%20or%20chatbot%20project`)}>Discuss an AI system</a><a class="btn-tertiary" href={sitePath('/consulting')}>Other consulting services ↗</a></div></div>
+  </section>
+</BaseLayout>

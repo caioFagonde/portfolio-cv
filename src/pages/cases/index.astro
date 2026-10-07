@@ -7,7 +7,7 @@ const cases = (await getCollection('cases')).sort((a, b) => a.data.order - b.dat
 ---
 <BaseLayout title="Cases — Systems Atlas" description="Technical case studies and research programmes by Caio Nahuel.">
   <section class="container-atlas py-14 md:py-20">
-    <SectionHeader eyebrow="Cases" title="Technical exhibits, not generic project cards." text="Each entry distinguishes what is implemented, what is researched, and what is planned." />
+    <SectionHeader level="h1" eyebrow="Cases" title="Engineering case studies." text="Architecture, methods, and design decisions from my projects." />
     <div class="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
       {cases.map((entry) => <CaseCard entry={entry} />)}
     </div>

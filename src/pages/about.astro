@@ -1,0 +1,85 @@
+---
+import { sitePath } from '@/utils/paths';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import { profile, cvSections, skillGroups } from '@/data/cv';
+---
+<BaseLayout
+  title="About — Caio Nahuel"
+  description="About Caio Nahuel: software developer and aerospace engineer working on applications, cloud infrastructure, AI agents, and chatbots."
+>
+  <section class="container-atlas py-14 md:py-20">
+    <div class="grid gap-10 border-b hairline pb-12 lg:grid-cols-[1.04fr_0.96fr] lg:items-end">
+      <div>
+        <p class="kicker">About</p>
+        <h1 class="mt-5 max-w-[12em] font-serif text-[clamp(3rem,6.4vw,5.8rem)] leading-[0.95] text-ink-900 text-balance">
+          Hi, I’m Caio.
+        </h1>
+      </div>
+      <div class="max-w-xl lg:justify-self-end">
+        <p class="text-lg leading-8 text-ink-700">{profile.summary}</p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a class="btn-primary" href={sitePath(`mailto:${profile.email}?subject=Technical%20build%20or%20repo%20review`)}>Email about a build</a>
+          <a class="btn-secondary" href={sitePath('/cv')}>Read CV</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-atlas pb-16 md:pb-20">
+    <div class="grid gap-10 lg:grid-cols-[0.76fr_1.24fr]">
+      <SectionHeader
+        eyebrow="Working style"
+        title="I work across the application and its infrastructure."
+        text="I’m comfortable moving between frontend, backend, deployment, and the data behind a feature."
+      />
+      <div class="grid gap-5 md:grid-cols-2">
+        {[
+          ['Cloud infrastructure', 'Containers, databases, object storage, workers, and deployment automation.'],
+          ['Software development', 'Web interfaces, APIs, integrations, and the systems behind them.'],
+          ['AI agents & chatbots', 'Assistants that search documents, call tools, and connect to existing applications.'],
+          ['Scientific software', 'OrbProp, geospatial analysis, numerical methods, and 3D visualization.']
+        ].map(([title, text]) => (
+          <div class="border-t hairline pt-4">
+            <h2 class="font-serif text-2xl leading-tight text-ink-900">{title}</h2>
+            <p class="mt-3 text-sm leading-7 text-ink-700">{text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-rule py-14">
+    <div class="container-atlas grid gap-8 lg:grid-cols-[0.76fr_1.24fr]">
+      <SectionHeader
+        eyebrow="Capability map"
+        title="Areas I work in."
+        text="Software and infrastructure are my main focus. Aerospace, geospatial analysis, and scientific computing are part of my background."
+      />
+      <div class="grid gap-4 md:grid-cols-2">
+        {cvSections.map((section) => (
+          <section class="border-t hairline pt-4">
+            <h2 class="font-serif text-2xl leading-tight text-ink-900">{section.title}</h2>
+            <ul class="mt-4 grid gap-2 text-sm leading-7 text-ink-700">
+              {section.items.slice(0, 4).map((item) => <li>{item}</li>)}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-atlas py-16 md:py-20">
+    <p class="kicker">Stack</p>
+    <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      {skillGroups.map((group) => (
+        <div class="atlas-card p-5">
+          <h2 class="font-serif text-2xl leading-tight text-ink-900">{group.name}</h2>
+          <div class="mt-4 flex flex-wrap gap-2">
+            {group.skills.map((skill) => <span class="meta-pill">{skill}</span>)}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

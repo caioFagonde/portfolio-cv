@@ -1,23 +1,39 @@
 ---
+import { sitePath, withoutBasePath } from '@/utils/paths';
 const nav = [
-  ['Cases', '/cases'],
-  ['Research', '/research'],
-  ['Lab', '/lab'],
-  ['CV', '/cv'],
-  ['Contact', '/contact']
+  ['Projects', '/projects'],
+  ['AI systems', '/ai-systems'],
+  ['Consulting', '/consulting'],
+  ['Skills', '/skills'],
+  ['About', '/about']
 ];
+const current = withoutBasePath(Astro.url.pathname);
 ---
-<header class="sticky top-0 z-40 border-b hairline bg-paper-50/88 backdrop-blur-sm">
-  <div class="container-atlas flex flex-wrap items-center justify-between gap-x-6 gap-y-3 py-4">
-    <a href="/" class="group flex items-baseline gap-3">
-      <span class="font-serif text-xl tracking-[-0.04em] text-ink-900">Caio Nahuel</span>
-      <span class="hidden font-mono text-[0.66rem] uppercase tracking-[0.18em] text-ink-600 sm:inline">Systems Atlas</span>
+<header class="site-header">
+  <div class="container-atlas header-inner">
+    <a href={sitePath('/')} class="site-brand" aria-label="Caio Nahuel — home">
+      <span class="brand-mark" aria-hidden="true">cn<span>.</span></span>
+      <span class="brand-name">Caio Nahuel<span>Software · Cloud · AI</span></span>
     </a>
-    <a href="mailto:caionahuel@gmail.com" class="rounded-full border hairline px-4 py-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-ink-800 transition-colors hover:border-copper-500 hover:text-copper-700">Write</a>
-    <nav class="order-last flex w-full gap-4 overflow-x-auto pt-1 md:order-none md:w-auto md:gap-6 md:pt-0">
-      {nav.map(([label, href]) => (
-        <a href={href} class="shrink-0 font-mono text-[0.72rem] uppercase tracking-[0.16em] text-ink-600 transition-colors hover:text-copper-600">{label}</a>
-      ))}
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">Menu <span aria-hidden="true">＋</span></button>
+    <nav id="primary-nav" aria-label="Main navigation">
+      {nav.map(([label, href]) => <a href={sitePath(href)} aria-current={current.startsWith(href) ? 'page' : undefined}>{label}</a>)}
+      <a href={sitePath('/contact')} class="header-contact">Let’s talk <span aria-hidden="true">↗</span></a>
     </nav>
   </div>
 </header>
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+  const nav = document.querySelector<HTMLElement>('#primary-nav');
+  if (toggle && nav) {
+    document.documentElement.classList.add('nav-ready');
+    const close = () => { toggle.setAttribute('aria-expanded', 'false'); nav.classList.remove('is-open'); };
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') !== 'true';
+      toggle.setAttribute('aria-expanded', String(open)); nav.classList.toggle('is-open', open);
+    });
+    nav.addEventListener('click', (event) => { if ((event.target as HTMLElement).closest('a')) close(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && nav.classList.contains('is-open')) { close(); toggle.focus(); } });
+    window.matchMedia('(min-width: 960px)').addEventListener('change', close);
+  }
+</script>
