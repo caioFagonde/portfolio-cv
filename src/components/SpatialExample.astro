@@ -18,6 +18,7 @@ const points = Array.from({length:900},(_,index) => {
   </div>
 </section>
 <script>
+  import { spatialCount } from '@/i18n/client';
   document.querySelectorAll<HTMLElement>('[data-spatial-example]').forEach((example) => {
     const range = example.querySelector<HTMLInputElement>('input')!;
     const map = example.dataset.kind === 'map';
@@ -25,7 +26,7 @@ const points = Array.from({length:900},(_,index) => {
     const update = () => {
       const value = Number(range.value); let count = 0;
       items.forEach((item,index) => { const shown = map ? Number(item.dataset.score) >= value : index%10 < value/10; item.style.opacity = shown ? '1' : map ? '.12' : '0'; if(shown) count++; });
-      example.querySelector('output')!.textContent = map ? `${value} / 100 · ${count} parcels shown` : `${value}% · ${count} points shown`;
+      example.querySelector('output')!.textContent = spatialCount(value, count, map);
     };
     range.addEventListener('input', update);
   });

@@ -62,6 +62,17 @@ try {
   await expect(page.locator('[data-skill-node]:visible')).toHaveText(['Terraform']);
   await accessible();
   report.checks.push('Skills filters work under the deployed path and pass axe.');
+  await page.getByRole('button', { name: 'Reset', exact: true }).click();
+  await page.getByRole('button', { name: 'Personal', exact: true }).click();
+  await expect(page.locator('[data-skill-node]:visible')).toHaveText(['Leadership', 'Management', 'Guitar', 'Piano', 'Portuguese — native', 'English — fluent', 'Spanish — fluent', 'French — intermediate']);
+  await accessible();
+  await page.locator('[data-skills-map]').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: `artifacts/screenshots/${name}-personal-mobile.png`, fullPage: true });
+  await page.getByRole('link', { name: /Language profile/ }).click();
+  await expect(page.locator('#spoken-languages')).toBeInViewport();
+  await expect(page.locator('#spoken-languages dd')).toHaveText(['native', 'fluent', 'fluent', 'intermediate']);
+  await accessible();
+  report.checks.push('Personal skills and language levels are filterable, link to the profile, and pass axe.');
   for (const [width,height,label] of [[1440,900,'desktop'],[1280,720,'laptop'],[1024,768,'tablet-landscape'],[768,1024,'tablet-portrait'],[390,844,'mobile']]) {
     await page.setViewportSize({ width,height });
     await go('/projects/document-report-automation');
@@ -71,10 +82,45 @@ try {
   }
   report.checks.push('Final report-automation copy reflows at all five viewports.');
   const cv = await page.request.get(`${baseURL}/cv-summary.md`);
-  expect(cv.ok()).toBe(true); expect(await cv.text()).toContain('caionahuel@gmail.com');
+  expect(cv.ok()).toBe(true);
+  const cvText = await cv.text();
+  expect(cvText).toContain('caionahuel@gmail.com');
+  expect(cvText).toContain('French — intermediate');
   const rss = await page.request.get(`${baseURL}/rss.xml`);
   expect(rss.ok()).toBe(true); expect(await rss.text()).toContain('/portfolio-cv/research/');
   report.checks.push('Generated CV and RSS links are present.');
+  await go('/pt/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
+  await expect(page.getByRole('link', { name: 'Projetos', exact: true }).first()).toHaveAttribute('href', `${basePath}/pt/projects`);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://caiofagonde.github.io${basePath}/pt/`);
+  await page.locator('[data-language-switch] a[hreflang="en"]').click();
+  expect(new URL(page.url()).pathname.replace(/\/$/, '')).toBe(basePath);
+  await page.locator('[data-language-switch] a[hreflang="pt-BR"]').click();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
+  report.checks.push('English/Portuguese switching, navigation, and canonical URLs work under the deployed path.');
+  await go('/pt/skills');
+  await page.locator('[data-skill-filter="personal"]').click();
+  await expect(page.locator('[data-skills-count]')).toHaveText('8 habilidades em 3 áreas');
+  await page.locator('[data-skills-search]').fill('frances');
+  await expect(page.locator('[data-skill-node]:visible')).toHaveText(['Francês — intermediário']);
+  await accessible();
+  await page.screenshot({ path: `artifacts/screenshots/${name}-pt-skills-mobile.png`, fullPage: true });
+  report.checks.push('Portuguese personal skills, unaccented search, counts, and accessibility pass.');
+  await go('/pt/demos');
+  await page.getByRole('button', { name: 'Quem aprova a publicação?' }).click();
+  await expect(page.locator('[data-citation]')).toHaveText('Ver página 2 ↗');
+  await page.getByRole('button', { name: 'Qual é o orçamento do projeto?' }).click();
+  await expect(page.locator('[data-answer-label]')).toHaveText('Sem trecho de apoio');
+  await page.locator('[data-kind="cloud"] input').fill('20');
+  await expect(page.locator('[data-kind="cloud"] output')).toHaveText('20% · 180 pontos exibidos');
+  await accessible();
+  report.checks.push('Portuguese source retrieval, missing evidence, spatial controls, and accessibility pass.');
+  for (const route of ['/cv-summary.pt.md', '/downloads/agent-qa-checklist.pt.md', '/downloads/repo-audit-checklist.pt.md', '/downloads/project-record-template.pt.md', '/downloads/ai-system-planning-checklist.pt.md']) {
+    const response = await page.request.get(`${baseURL}${route}`);
+    expect(response.ok(), route).toBe(true);
+    if (route === '/cv-summary.pt.md') expect(await response.text()).toContain('Francês — intermediário');
+  }
+  report.checks.push('Portuguese CV and all four translated downloads are reachable.');
 } catch (error) {
   report.failures.push(error.message);
 } finally {

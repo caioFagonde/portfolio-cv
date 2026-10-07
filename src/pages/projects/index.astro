@@ -20,6 +20,7 @@ const featured = projects.find((p) => p.slug === 'foundry-platform')!;
   <section class="section-rule editorial-section"><div class="container-atlas"><div class="section-heading"><div><p class="kicker">Public GitHub archive</p><h2>More code on GitHub.</h2><p>Applications, libraries, and automation from my public repositories.</p></div><a class="btn-tertiary" href={sitePath(githubSnapshot.profileUrl)} target="_blank" rel="noreferrer">GitHub profile ↗</a></div><div class="repo-ledger">{githubRepoSignals.map((repo) => <a href={sitePath(repo.url)} target="_blank" rel="noreferrer"><p class="kicker">{repo.label}</p><h3 class="mt-2">{repo.name} ↗</h3><p>{repo.signal}</p><div class="mt-4 flex flex-wrap gap-2">{repo.stack.slice(0,3).map((item) => <span class="meta-pill">{item}</span>)}</div></a>)}</div></div></section>
 </BaseLayout>
 <script>
+  import { foldText, projectCount } from '@/i18n/client';
   const controls = document.querySelector<HTMLElement>('[data-project-filters]');
   const search = document.querySelector<HTMLInputElement>('#project-search');
   const category = document.querySelector<HTMLSelectElement>('#project-category');
@@ -29,10 +30,10 @@ const featured = projects.find((p) => p.slug === 'foundry-platform')!;
   if (controls && search && category && count && empty) {
     controls.hidden = false;
     const update = () => {
-      const terms = search.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      const terms = foldText(search.value.trim()).split(/\s+/).filter(Boolean);
       let total = 0;
-      entries.forEach((entry) => { const match = (category.value === 'all' || category.value === entry.dataset.category) && terms.every((term) => entry.dataset.search?.includes(term)); entry.hidden = !match; if(match) total++; });
-      count.textContent = `${total} ${total === 1 ? 'project' : 'projects'}`; empty.hidden = total > 0;
+      entries.forEach((entry) => { const match = (category.value === 'all' || category.value === entry.dataset.category) && terms.every((term) => foldText(entry.dataset.search ?? '').includes(term)); entry.hidden = !match; if(match) total++; });
+      count.textContent = projectCount(total); empty.hidden = total > 0;
     };
     search.addEventListener('input', update); category.addEventListener('change', update);
     document.querySelector('#project-reset')?.addEventListener('click', () => { search.value = ''; category.value = 'all'; update(); search.focus(); });

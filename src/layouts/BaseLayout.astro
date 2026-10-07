@@ -3,6 +3,9 @@ import { sitePath } from '@/utils/paths';
 import '../styles/globals.css';
 import SiteHeader from '@/components/SiteHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
+import LocalizedContent from '@/components/LocalizedContent.astro';
+import { localeFromPath, localePath } from '@/i18n/locale';
+import { translate } from '@/i18n/html';
 
 interface Props {
   title: string;
@@ -10,30 +13,39 @@ interface Props {
 }
 
 const { title, description = 'Software development, cloud infrastructure, AI agents, and chatbots by Caio Nahuel.' } = Astro.props;
+const locale = localeFromPath(Astro.url.pathname);
+const localizedTitle = translate(title, locale);
+const localizedDescription = translate(description, locale);
 // Static pages are directory indexes; Pages serves their canonical trailing slash.
 const canonical = new URL(`${Astro.url.pathname.replace(/\/$/, '')}/`, Astro.site ?? 'https://caiofagonde.github.io');
 ---
 <!doctype html>
-<html lang="en">
+<html lang={locale === 'pt' ? 'pt-BR' : 'en'}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    <title>{localizedTitle}</title>
+    <meta name="description" content={localizedDescription} />
     <link rel="canonical" href={sitePath(canonical)} />
+    <link rel="alternate" hreflang="en" href={new URL(`${localePath(Astro.url.pathname, 'en').replace(/\/$/, '')}/`, canonical.origin)} />
+    <link rel="alternate" hreflang="pt-BR" href={new URL(`${localePath(Astro.url.pathname, 'pt').replace(/\/$/, '')}/`, canonical.origin)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(`${localePath(Astro.url.pathname, 'en').replace(/\/$/, '')}/`, canonical.origin)} />
     <link rel="icon" type="image/svg+xml" href={sitePath('/favicon.svg')} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={localizedTitle} />
+    <meta property="og:description" content={localizedDescription} />
+    <meta property="og:locale" content={locale === 'pt' ? 'pt_BR' : 'en_US'} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta name="theme-color" content="#f7f5ef" />
   </head>
   <body>
+    <LocalizedContent>
     <a class="skip-link" href="#main-content">Skip to content</a>
     <SiteHeader />
     <main id="main-content">
       <slot />
     </main>
     <SiteFooter />
+    </LocalizedContent>
   </body>
 </html>

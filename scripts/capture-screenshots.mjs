@@ -6,7 +6,7 @@ import net from 'node:net';
 const screenshotDir = 'artifacts/screenshots';
 const reportDir = 'artifacts/reports';
 
-const routes = [
+const sourceRoutes = [
   { name: 'home', path: '/' },
   { name: 'consulting', path: '/consulting' },
   { name: 'ai-systems', path: '/ai-systems' },
@@ -43,6 +43,8 @@ const routes = [
   { name: 'demos', path: '/demos' },
   { name: 'contact', path: '/contact' }
 ];
+
+const routes = sourceRoutes.flatMap((route) => [route, { name: `pt-${route.name}`, path: `/pt${route.path}` }]);
 
 const viewports = [
   { name: 'desktop', width: 1440, height: 900 },
@@ -129,8 +131,11 @@ const manifest = {
 };
 
 try {
-  for (const route of routes) {
-    for (const viewport of viewports) {
+  const jobs = routes.flatMap((route) => viewports.map((viewport) => ({ route, viewport })));
+  // Independent browser pages; bounded batches keep the bilingual matrix quick
+  // without launching hundreds of pages or changing manifest order.
+  for (let index = 0; index < jobs.length; index += 4) {
+    const batch = await Promise.allSettled(jobs.slice(index, index + 4).map(async ({ route, viewport }) => {
       const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
       const response = await page.goto(`${server.baseURL}${route.path}`, { waitUntil: 'networkidle' });
       if (!response?.ok()) throw new Error(`Route ${route.path} returned ${response?.status()}`);
@@ -141,11 +146,27 @@ try {
       const path = `${screenshotDir}/${route.name}-${viewport.name}.png`;
       await page.screenshot({ path, fullPage: true, animations: 'disabled' });
       await page.close();
-      manifest.screenshots.push({ route: route.path, viewport, path });
       console.log(`Captured ${path}`);
+      return { route: route.path, viewport, path };
+    }));
+    for (const result of batch) {
+      if (result.status === 'rejected') throw result.reason;
+      manifest.screenshots.push(result.value);
     }
   }
   const states = [
+    { name: 'pt-skills-personal-desktop', route: '/pt/skills', viewport: { width: 1440, height: 900 }, action: async (page) => { await page.locator('[data-skill-filter="personal"]').click(); await page.locator('[data-skills-map]').evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + scrollY - 100)); } },
+    { name: 'pt-skills-personal-mobile', route: '/pt/skills', viewport: { width: 390, height: 844 }, action: async (page) => { await page.locator('[data-skill-filter="personal"]').click(); await page.locator('[data-skills-map]').evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + scrollY - 100)); } },
+    { name: 'pt-gallery-mobile', route: '/pt/projects/geodocs-document-assistant', viewport: { width: 390, height: 844 }, action: async (page) => { await page.locator('[data-gallery-image]').first().click(); } },
+    { name: 'pt-retrieval-missing-mobile', route: '/pt/demos', viewport: { width: 390, height: 844 }, action: async (page) => { await page.locator('[data-question]').last().click(); await page.locator('.retrieval-conversation').scrollIntoViewIfNeeded(); } },
+    { name: 'pt-skills-search-empty', route: '/pt/skills', viewport: { width: 1440, height: 900 }, action: async (page) => { await page.locator('[data-skills-search]').fill('sem-correspondencia'); await page.locator('[data-skills-map]').scrollIntoViewIfNeeded(); } },
+    { name: 'pt-mobile-menu-open', route: '/pt/', viewport: { width: 390, height: 844 }, action: async (page) => { await page.getByRole('button', { name: /Menu/ }).click(); } },
+    { name: 'pt-spatial-filter-desktop', route: '/pt/demos', viewport: { width: 1440, height: 900 }, action: async (page) => { await page.locator('[data-kind="map"] input').fill('65'); await page.locator('#spatial-map').scrollIntoViewIfNeeded(); } },
+    { name: 'pt-cloud-detail-mobile', route: '/pt/demos', viewport: { width: 390, height: 844 }, action: async (page) => { await page.locator('[data-kind="cloud"] input').fill('20'); await page.locator('#spatial-cloud').scrollIntoViewIfNeeded(); } },
+    { name: 'pt-ai-operational-flow', route: '/pt/ai-systems', viewport: { width: 1440, height: 900 }, action: async (page) => { await page.locator('[data-pattern="operations"]').click(); await page.locator('.flow-explorer').scrollIntoViewIfNeeded(); } },
+    { name: 'pt-project-filter-empty', route: '/pt/projects', viewport: { width: 1440, height: 900 }, action: async (page) => { await page.locator('#project-search').fill('sem-correspondencia'); await page.locator('#project-index').scrollIntoViewIfNeeded(); } },
+    { name: 'skills-personal-desktop', route: '/skills', viewport: { width: 1440, height: 900 }, action: async (page) => { await page.getByRole('button', { name: 'Personal', exact: true }).click(); await page.locator('[data-skills-map]').scrollIntoViewIfNeeded(); } },
+    { name: 'skills-personal-mobile', route: '/skills', viewport: { width: 390, height: 844 }, action: async (page) => { await page.getByRole('button', { name: 'Personal', exact: true }).click(); await page.locator('[data-skills-map]').scrollIntoViewIfNeeded(); } },
     { name: 'gallery-desktop', route: '/projects/geodocs-document-assistant', viewport: { width: 1440, height: 900 }, action: async (page) => { await page.locator('[data-gallery-image]').first().click(); } },
     { name: 'gallery-mobile', route: '/projects/geodocs-document-assistant', viewport: { width: 390, height: 844 }, action: async (page) => { await page.locator('[data-gallery-image]').first().click(); } },
     { name: 'retrieval-missing-mobile', route: '/demos', viewport: { width: 390, height: 844 }, action: async (page) => { await page.getByRole('button', { name: 'What is the project budget?' }).click(); await page.locator('.retrieval-conversation').scrollIntoViewIfNeeded(); } },

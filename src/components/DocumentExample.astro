@@ -23,12 +23,13 @@ const passages = [
   </div>
 </section>
 <script>
+  import { citationLabel, foldText, missingAnswer, missingSource, sourceLabel } from '@/i18n/client';
   document.querySelectorAll<HTMLElement>('[data-document-example]').forEach((example) => {
     const form = example.querySelector('form')!;
     const input = form.querySelector('input')!;
     const source = Array.from(example.querySelectorAll<HTMLElement>('[data-passage]'));
-    const stop = new Set(['a','an','are','is','the','for','of','to','in','and','after','how','who','what','do','does','it','i','can','my','your']);
-    const tokens = (text: string) => (text.toLowerCase().match(/[a-z0-9]+/g) ?? []).filter((word) => !stop.has(word));
+    const stop = new Set(['a','an','are','is','the','for','of','to','in','and','after','how','who','what','do','does','it','i','can','my','your','o','os','as','um','uma','de','do','da','dos','das','e','em','por','para','que','quem','qual','quanto','como','sao','se','na','no','ao','apos']);
+    const tokens = (text: string) => (foldText(text).match(/[a-z0-9]+/g) ?? []).filter((word) => !stop.has(word));
     const documents = source.map((item) => tokens(item.dataset.text!));
     const averageLength = documents.reduce((sum, document) => sum + document.length, 0) / documents.length;
     const search = () => {
@@ -43,11 +44,11 @@ const passages = [
       const passage = source[best];
       const found = scores[best] > 0;
       source.forEach((item) => item.classList.toggle('source-match', found && item === passage));
-      example.querySelector('[data-answer-label]')!.textContent = found ? `Source passage · page ${passage.dataset.page}` : 'No supporting passage';
-      example.querySelector('[data-answer]')!.textContent = found ? passage.dataset.text! : 'This sample document does not support an answer. Add the relevant source before answering this question.';
+      example.querySelector('[data-answer-label]')!.textContent = found ? sourceLabel(passage.dataset.page!) : missingSource();
+      example.querySelector('[data-answer]')!.textContent = found ? passage.dataset.text! : missingAnswer();
       const citation = example.querySelector<HTMLAnchorElement>('[data-citation]')!;
       citation.hidden = !found;
-      if(found) { citation.href = `#${passage.id}`; citation.textContent = `Check page ${passage.dataset.page} ↗`; }
+      if(found) { citation.href = `#${passage.id}`; citation.textContent = citationLabel(passage.dataset.page!); }
     };
     form.addEventListener('submit', (event) => { event.preventDefault(); search(); });
     example.querySelectorAll<HTMLButtonElement>('[data-question]').forEach((button) => button.addEventListener('click', () => { input.value = button.textContent!.replace(/ ↗$/, ''); search(); }));

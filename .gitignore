@@ -5,9 +5,11 @@ dist/
 .env.*
 .DS_Store
 public/cv-summary.md
+public/cv-summary.pt.md
 
 # Generated verification evidence stays local; curated handoffs are tracked.
 artifacts/screenshots/
 artifacts/reports/*
 !artifacts/reports/visual-examples-release.md
+!artifacts/reports/bilingual-personal-skills-release.md
 .mcp.json

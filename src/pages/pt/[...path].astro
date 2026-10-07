@@ -1,0 +1,45 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { projects } from '@/data/projects';
+import type { Project as ProjectData } from '@/data/projects';
+import Home from '../index.astro';
+import About from '../about.astro';
+import CV from '../cv.astro';
+import Contact from '../contact.astro';
+import Consulting from '../consulting.astro';
+import Workflow from '../workflow.astro';
+import Audit from '../repo-audit.astro';
+import Checklist from '../agent-qa-checklist.astro';
+import AI from '../ai-systems.astro';
+import Skills from '../skills.astro';
+import Projects from '../projects/index.astro';
+import Project from '../projects/[slug].astro';
+import Cases from '../cases/index.astro';
+import Case from '../cases/[slug].astro';
+import Research from '../research/index.astro';
+import Article from '../research/[slug].astro';
+import Demos from '../demos/index.astro';
+import Lab from '../lab/index.astro';
+
+export async function getStaticPaths() {
+  const staticPages = ['', 'about', 'cv', 'contact', 'consulting', 'workflow', 'repo-audit', 'agent-qa-checklist', 'ai-systems', 'skills', 'projects', 'cases', 'research', 'demos', 'lab'];
+  const cases = await getCollection('cases');
+  const articles = [...await getCollection('essays'), ...await getCollection('notes')];
+  return [
+    ...staticPages.map((path) => ({ params: { path: path || undefined }, props: { kind: path || 'home' } })),
+    ...projects.map((project) => ({ params: { path: `projects/${project.slug}` }, props: { kind: 'project', project } })),
+    ...cases.map((entry) => ({ params: { path: `cases/${entry.slug}` }, props: { kind: 'case', entry } })),
+    ...articles.map((entry) => ({ params: { path: `research/${entry.slug}` }, props: { kind: 'article', entry } }))
+  ];
+}
+
+const views = { home: Home, about: About, cv: CV, contact: Contact, consulting: Consulting, workflow: Workflow, 'repo-audit': Audit, 'agent-qa-checklist': Checklist, 'ai-systems': AI, skills: Skills, projects: Projects, cases: Cases, research: Research, demos: Demos, lab: Lab };
+interface Props {
+  kind: keyof typeof views | 'project' | 'case' | 'article';
+  project?: ProjectData;
+  entry?: CollectionEntry<'cases'> | CollectionEntry<'essays'> | CollectionEntry<'notes'>;
+}
+const { kind, project, entry } = Astro.props as Props;
+const View = views[kind as keyof typeof views];
+---
+{kind === 'project' ? <Project project={project!} /> : kind === 'case' ? <Case entry={entry as CollectionEntry<'cases'>} /> : kind === 'article' ? <Article entry={entry as CollectionEntry<'essays'> | CollectionEntry<'notes'>} /> : <View />}

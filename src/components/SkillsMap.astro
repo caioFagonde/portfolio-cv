@@ -10,7 +10,7 @@ const total = new Set(skillBranches.flatMap((branch) => branch.skills)).size;
     <div class="skills-filter-buttons" role="group" aria-label="Filter skills by area">
       {skillFilters.map((filter) => <button type="button" data-skill-filter={filter.id} aria-pressed={filter.id === 'all'}>{filter.label}</button>)}
     </div>
-    <label class="skills-search">Find a skill<input type="search" data-skills-search placeholder="Python, Terraform, RAG…" /></label>
+    <label class="skills-search">Find a skill<input type="search" data-skills-search placeholder="Python, French, RAG…" /></label>
   </div>
   <div class="skills-summary"><p class="kicker">Capability map</p><p data-skills-count role="status" aria-live="polite">{total} skills across {skillBranches.length} areas</p><button type="button" data-skills-reset hidden>Reset</button></div>
   <div class="skills-graph" data-skills-graph>
@@ -26,9 +26,10 @@ const total = new Set(skillBranches.flatMap((branch) => branch.skills)).size;
     </div>
     <p class="skills-empty" data-skills-empty hidden>No skills match this search. Try another term or reset the filters.</p>
   </div>
-  <p class="skills-map-note">Lines connect each area to the profile. Project links show where the skills are used.</p>
+  <p class="skills-map-note">Explore each area through its project or profile link.</p>
 </div>
 <script>
+  import { foldText, skillCount } from '@/i18n/client';
   document.querySelectorAll<HTMLElement>('[data-skills-map]').forEach((map) => {
     const search = map.querySelector<HTMLInputElement>('[data-skills-search]')!;
     const buttons = map.querySelectorAll<HTMLButtonElement>('[data-skill-filter]');
@@ -58,15 +59,15 @@ const total = new Set(skillBranches.flatMap((branch) => branch.skills)).size;
       }
     };
     const update = () => {
-      const query = search.value.trim().toLowerCase();
+      const query = foldText(search.value.trim());
       const found = new Set<string>();
       let areas = 0;
       for (const branch of branches) {
         const areaMatches = active === 'all' || branch.dataset.filters?.split(' ').includes(active);
-        const titleMatches = Boolean(query) && branch.dataset.area?.toLowerCase().includes(query);
+        const titleMatches = Boolean(query) && foldText(branch.dataset.area ?? '').includes(query);
         let matches = 0;
         branch.querySelectorAll<HTMLElement>('[data-skill-node]').forEach((node) => {
-          const match = areaMatches && (!query || titleMatches || node.textContent!.toLowerCase().includes(query));
+          const match = areaMatches && (!query || titleMatches || foldText(node.textContent!).includes(query));
           node.hidden = !match;
           if (match) { matches++; found.add(node.textContent!); }
         });
@@ -75,7 +76,7 @@ const total = new Set(skillBranches.flatMap((branch) => branch.skills)).size;
       }
       buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.skillFilter === active)));
       graph.dataset.visibleAreas = String(areas);
-      map.querySelector<HTMLElement>('[data-skills-count]')!.textContent = `${found.size} ${found.size === 1 ? 'skill' : 'skills'} across ${areas} ${areas === 1 ? 'area' : 'areas'}`;
+      map.querySelector<HTMLElement>('[data-skills-count]')!.textContent = skillCount(found.size, areas);
       map.querySelector<HTMLElement>('[data-skills-empty]')!.hidden = areas > 0;
       reset.hidden = active === 'all' && !query;
       requestAnimationFrame(draw);

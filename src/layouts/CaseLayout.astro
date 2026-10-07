@@ -1,11 +1,12 @@
 ---
-import { sitePath, withoutBasePath } from '@/utils/paths';
+import { sitePath } from '@/utils/paths';
+import { withoutLocalePath } from '@/i18n/locale';
 import ProjectGallery from '@/components/ProjectGallery.astro';
 import { projects } from '@/data/projects';
 import BaseLayout from './BaseLayout.astro';
 import DomainPill from '@/components/DomainPill.astro';
 const { frontmatter } = Astro.props;
-const project = projects.find((item) => item.caseStudyUrl === withoutBasePath(Astro.url.pathname).replace(/\/$/, ''));
+const project = projects.find((item) => item.caseStudyUrl === withoutLocalePath(Astro.url.pathname).replace(/\/$/, ''));
 ---
 <BaseLayout title={`${frontmatter.title} — Systems Atlas`} description={frontmatter.summary}>
   <article class="container-atlas py-14 md:py-20">

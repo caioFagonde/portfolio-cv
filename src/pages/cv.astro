@@ -2,6 +2,7 @@
 import { sitePath } from '@/utils/paths';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionHeader from '@/components/SectionHeader.astro';
+import PersonalProfile from '@/components/PersonalProfile.astro';
 import { profile, cvSections, skillGroups } from '@/data/cv';
 ---
 <BaseLayout title="CV — Caio Nahuel" description="Systems-engineering CV for Caio Nahuel Sousa Fagonde.">
@@ -20,6 +21,8 @@ import { profile, cvSections, skillGroups } from '@/data/cv';
         </dl>
       </aside>
     </div>
+
+    <div class="mt-12"><PersonalProfile /></div>
 
     <div class="mt-16 grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
       <SectionHeader eyebrow="Profile" title="Software, infrastructure, and AI." text="Development experience and technical specialties." />

@@ -1,0 +1,6 @@
+---
+import { localizeHtml } from '@/i18n/html';
+import { localeFromPath } from '@/i18n/locale';
+const html = await Astro.slots.render('default');
+---
+<Fragment set:html={localizeHtml(html, localeFromPath(Astro.url.pathname))} />

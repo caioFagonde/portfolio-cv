@@ -87,7 +87,7 @@ export const cvSections = [
 
 export const skillGroups = [
   {
-    name: 'Languages',
+    name: 'Programming languages',
     skills: ['Python', 'TypeScript', 'PHP', 'Vue SFCs', 'C#', 'C++', 'Go', 'Rust', 'Kotlin', 'SQL', 'MATLAB']
   },
   {
@@ -114,6 +114,28 @@ export const skillGroups = [
     name: 'Systems',
     skills: ['Shell', 'Make', 'Just', 'Docker', 'S3/MinIO', 'worker queues', 'Godot', 'agent QA harnesses']
   }
+];
+
+export const personalSkillGroups = [
+  {
+    id: 'leadership-management',
+    title: 'Leadership & management',
+    description: 'How I work with people and projects.',
+    skills: ['Leadership', 'Management']
+  },
+  {
+    id: 'music',
+    title: 'Music',
+    description: 'Outside of engineering, I play guitar and piano.',
+    skills: ['Guitar', 'Piano']
+  }
+];
+
+export const spokenLanguages = [
+  { name: 'Portuguese', level: 'native' },
+  { name: 'English', level: 'fluent' },
+  { name: 'Spanish', level: 'fluent' },
+  { name: 'French', level: 'intermediate' }
 ];
 
 // Keep software and AI first; scientific specialties remain part of the profile.

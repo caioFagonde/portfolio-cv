@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 
 const routes = ['/', '/consulting', '/workflow', '/repo-audit', '/projects', '/projects/agent-qa-harness', '/agent-qa-checklist', '/contact', '/ai-systems', '/projects/geodocs-document-assistant', '/projects/orbit-trajectory-propagator', '/skills', '/cases/orbit-trajectory-propagator', '/demos', '/research', '/about', '/cv', '/cases', '/lab', '/research/document-assistants', '/research/scientific-visualization', '/projects/personal-os', '/projects/lidar-webgl-client', '/projects/visual-metrology-studio', '/projects/godot-simulation-experiments', '/projects/rgm-compression', '/projects/public-source-ingestion', '/projects/document-report-automation', '/projects/resurgent-library', '/projects/relasp', '/projects/foundry-platform', '/projects/agentic-cortex', '/projects/hasselt-infill-atlas'];
 
-for (const route of routes) {
+for (const route of routes.flatMap((path) => [path, `/pt${path}`])) {
   test(`no serious accessibility violations on ${route}`, async ({ page }) => {
     await page.goto(route);
     const results = await new AxeBuilder({ page }).analyze();
@@ -23,6 +23,24 @@ test('keyboard focus is visible on primary navigation', async ({ page }) => {
   expect(activeOutline).not.toBe('none');
 });
 
+test('Portuguese interactive states remain accessible on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/pt/skills');
+  await page.locator('[data-skill-filter="personal"]').click();
+  let scan = await new AxeBuilder({ page }).analyze();
+  expect(scan.violations.filter((v) => ['serious', 'critical'].includes(v.impact ?? ''))).toEqual([]);
+  await page.locator('[data-skills-search]').fill('sem-correspondencia');
+  scan = await new AxeBuilder({ page }).analyze();
+  expect(scan.violations.filter((v) => ['serious', 'critical'].includes(v.impact ?? ''))).toEqual([]);
+  await page.goto('/pt/ai-systems');
+  await page.getByRole('button', { name: /Menu/ }).click();
+  for (const pattern of ['documents', 'operations', 'intake']) {
+    await page.locator(`[data-pattern="${pattern}"]`).click();
+    scan = await new AxeBuilder({ page }).analyze();
+    expect(scan.violations.filter((v) => ['serious', 'critical'].includes(v.impact ?? ''))).toEqual([]);
+  }
+});
+
 
 test('mobile navigation and alternate AI flow states are accessible', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -39,7 +57,7 @@ test('mobile navigation and alternate AI flow states are accessible', async ({ p
 test('skills filters and search remain accessible on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/skills');
-  for (const area of ['Cloud', 'AI agents', 'Chatbots', 'Science & data']) {
+  for (const area of ['Cloud', 'AI agents', 'Chatbots', 'Science & data', 'Personal']) {
     await page.getByRole('button', { name: area, exact: true }).click();
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter((v) => ['serious', 'critical'].includes(v.impact ?? ''))).toEqual([]);

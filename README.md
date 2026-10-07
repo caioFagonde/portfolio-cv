@@ -2,7 +2,7 @@
 
 A static-first engineering portfolio, AI-systems consulting site, research log, and case-study archive.
 
-This is not a conventional portfolio template. It is structured around systems: aerospace simulation, numerical methods, geospatial intelligence, computer vision, secure execution, agentic software, geometry compression, and research programmes.
+The portfolio leads with software development, cloud infrastructure, AI agents, and chatbots. Scientific software, geospatial work, and numerical methods provide additional engineering examples.
 
 ## Stack
 
@@ -34,11 +34,7 @@ pnpm build
 
 ## Deploy
 
-Use the included GitHub Actions workflow in `.github/workflows/deploy.yml`. For a user site, name the repository:
-
-```text
-caioFagonde.github.io
-```
+Push `main` to trigger `.github/workflows/deploy.yml`. This repository publishes at [the English portfolio](https://caiofagonde.github.io/portfolio-cv/) and [the Portuguese portfolio](https://caiofagonde.github.io/portfolio-cv/pt/). The workflow sets the repository URL prefix; local development uses `/`.
 
 ## Content authoring
 
@@ -88,4 +84,16 @@ PUBLIC_BASE_PATH=/portfolio-cv pnpm preview --host 127.0.0.1 --port 4322
 SITE_URL=http://127.0.0.1:4322/portfolio-cv node scripts/verify-built-site.mjs
 ```
 
-The screenshot matrix covers 34 routes, including all 15 projects, at five viewport sizes. Generated screenshots, browser traces, and machine-specific MCP configuration stay outside Git. A curated release report and `HANDOFF.md` record verification and media provenance. Stop independently started dev servers before `pnpm agent:verify`; builds reset Astro's generated content cache. Use `SITE_URL` for checks against an intentionally managed server.
+The screenshot matrix covers 68 routes across both languages, including all 15 projects, at five viewport sizes. Generated screenshots, browser traces, and machine-specific MCP configuration stay outside Git. A curated release report and `HANDOFF.md` record verification and media provenance. Stop independently started dev servers before `pnpm agent:verify`; builds reset Astro's generated content cache. Use `SITE_URL` for checks against an intentionally managed server.
+
+## English, Portuguese, and personal skills
+
+English keeps the existing routes. Portuguese uses `/pt/`, with equivalent pages and an always-visible EN/PT switch. Both versions render complete static HTML, including without JavaScript. Switching preserves the current page and, with JavaScript, its reading anchor. Metadata and alternate-language links follow the selected language.
+
+English components and data are the canonical content source. `src/pages/pt/[...path].astro` renders those components for Portuguese routes. `src/i18n/html.ts` parses trusted rendered HTML at build time and applies `src/i18n/pt.json`; it preserves code, URLs, identifiers, and original media. `src/i18n/client.ts` contains the small set of browser-generated messages. `src/i18n/locale.ts` handles page destinations separately from shared files.
+
+When adding or editing public copy, add its normalized English text as a catalog key and its Portuguese translation as the value. Preserve product and tool names. `pnpm build` runs `scripts/validate-translations.mjs`, rejecting missing translations or missing Portuguese pages. A new static page also needs an entry in the Portuguese route dispatcher. Browser-generated messages must be updated in both languages. Code snippets, project names, original screenshots, and external destinations retain their original language.
+
+`src/data/cv.ts` supplies leadership, management, guitar, piano, and four spoken languages with the user-confirmed proficiency levels. `PersonalProfile.astro` renders the same data in About and CV; the shared skills map adds a Personal/Pessoal filter. Programming languages remain a separate category. `pnpm export:cv` generates both CV summaries, and Portuguese checklists live beside their English versions under `public/downloads/`.
+
+See `artifacts/reports/bilingual-personal-skills-release.md` and the first section of `HANDOFF.md` for verification, screenshot review scope, and maintenance instructions.

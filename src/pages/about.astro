@@ -2,6 +2,7 @@
 import { sitePath } from '@/utils/paths';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionHeader from '@/components/SectionHeader.astro';
+import PersonalProfile from '@/components/PersonalProfile.astro';
 import { profile, cvSections, skillGroups } from '@/data/cv';
 ---
 <BaseLayout
@@ -48,6 +49,8 @@ import { profile, cvSections, skillGroups } from '@/data/cv';
       </div>
     </div>
   </section>
+
+  <div class="container-atlas pb-8"><PersonalProfile /></div>
 
   <section class="section-rule py-14">
     <div class="container-atlas grid gap-8 lg:grid-cols-[0.76fr_1.24fr]">

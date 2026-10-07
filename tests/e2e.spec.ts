@@ -9,7 +9,7 @@ const routes = [
   { path: '/projects', title: /Projects/, heading: /Projects across/i },
   { path: '/projects/agent-qa-harness', title: /Agent QA Harness/, heading: /Agent QA Harness/i },
   { path: '/agent-qa-checklist', title: /Agent QA Checklist/, heading: /agent must produce evidence/i },
-  { path: '/skills', title: /Skills/, heading: /My technical.*toolbox/i },
+  { path: '/skills', title: /Skills/, heading: /Skills, tools.*& interests/i },
   { path: '/projects/orbit-trajectory-propagator', title: /OrbProp/, heading: /OrbProp/ },
   { path: '/contact', title: /Contact/, heading: /Tell me about your project/i }
 ];
@@ -113,7 +113,7 @@ test('navigation and content remain usable without JavaScript', async ({ browser
 for (const width of [320, 390, 768, 1024, 1280, 1440]) {
   test(`core layouts reflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    for (const route of ['/', '/ai-systems', '/consulting', '/projects', '/contact', '/skills']) {
+    for (const route of ['/', '/ai-systems', '/consulting', '/projects', '/contact', '/skills', '/about', '/cv']) {
       await page.goto(route);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
       expect(overflow, `Horizontal overflow on ${route}`).toBe(false);
@@ -135,7 +135,7 @@ test('date-only research metadata keeps its authored day', async ({ page }) => {
 test('skills diagram filters, searches, handles empty results, and resets', async ({ page }) => {
   await page.goto('/skills');
   const map = page.locator('[data-skills-map]');
-  await expect(map.locator('[data-skill-branch]:visible')).toHaveCount(9);
+  await expect(map.locator('[data-skill-branch]:visible')).toHaveCount(12);
   await map.getByRole('button', { name: 'Cloud', exact: true }).click();
   await expect(map.getByRole('button', { name: 'Cloud', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await map.getByLabel('Find a skill').fill('Terraform');
@@ -144,7 +144,7 @@ test('skills diagram filters, searches, handles empty results, and resets', asyn
   await map.getByLabel('Find a skill').fill('no-such-skill');
   await expect(map.getByText('No skills match this search.', { exact: false })).toBeVisible();
   await map.getByRole('button', { name: 'Reset', exact: true }).click();
-  await expect(map.locator('[data-skill-branch]:visible')).toHaveCount(9);
+  await expect(map.locator('[data-skill-branch]:visible')).toHaveCount(12);
   await expect(map.getByLabel('Find a skill')).toBeFocused();
   await map.getByRole('button', { name: 'Chatbots', exact: true }).focus();
   await page.keyboard.press('Enter');
@@ -156,10 +156,43 @@ test('skills diagram keeps the full catalog without JavaScript', async ({ browse
   const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   await page.goto('/skills');
-  await expect(page.locator('[data-skill-branch]:visible')).toHaveCount(9);
+  await expect(page.locator('[data-skill-branch]:visible')).toHaveCount(12);
   await expect(page.getByText('Terraform', { exact: true })).toBeVisible();
+  await expect(page.getByText('French — intermediate', { exact: true })).toBeVisible();
+  await expect(page.getByText('Piano', { exact: true })).toBeVisible();
   await expect(page.locator('[data-skills-controls]')).toBeHidden();
   await context.close();
+});
+
+test('personal skills filter keeps language levels and leads to the profile', async ({ page }) => {
+  await page.goto('/skills');
+  const map = page.locator('[data-skills-map]');
+  const personal = map.getByRole('button', { name: 'Personal', exact: true });
+  await personal.focus();
+  await page.keyboard.press('Enter');
+  await expect(personal).toHaveAttribute('aria-pressed', 'true');
+  await expect(map.locator('[data-skill-branch]:visible')).toHaveCount(3);
+  await expect(map.locator('[data-skill-node]:visible')).toHaveText([
+    'Leadership', 'Management', 'Guitar', 'Piano',
+    'Portuguese — native', 'English — fluent', 'Spanish — fluent', 'French — intermediate'
+  ]);
+  await expect(map.getByRole('status')).toHaveText('8 skills across 3 areas');
+  await map.getByLabel('Find a skill').fill('French');
+  await expect(map.locator('[data-skill-node]:visible')).toHaveText(['French — intermediate']);
+  await map.getByRole('link', { name: /Language profile/ }).click();
+  await expect(page).toHaveURL(/\/about#spoken-languages$/);
+  await expect(page.locator('#spoken-languages')).toBeInViewport();
+  await expect(page.locator('#spoken-languages dd')).toHaveText(['native', 'fluent', 'fluent', 'intermediate']);
+});
+
+test('about and CV include the confirmed personal profile', async ({ page }) => {
+  for (const route of ['/about', '/cv']) {
+    await page.goto(route);
+    await expect(page.locator('#leadership-management li')).toHaveText(['Leadership', 'Management']);
+    await expect(page.locator('#music li')).toHaveText(['Guitar', 'Piano']);
+    await expect(page.locator('#spoken-languages dt')).toHaveText(['Portuguese', 'English', 'Spanish', 'French']);
+    await expect(page.locator('#spoken-languages dd')).toHaveText(['native', 'fluent', 'fluent', 'intermediate']);
+  }
 });
 
 test('contact destinations and public project presentation follow the profile', async ({ page }) => {
@@ -179,4 +212,10 @@ test('downloadable CV uses the same development profile and contact', async ({ r
   const content = await response.text();
   expect(content).toContain('cloud infrastructure, AI agents, and chatbots');
   expect(content).toContain('caionahuel@gmail.com');
+  expect(content).toContain('Leadership, Management');
+  expect(content).toContain('Guitar, Piano');
+  expect(content).toContain('Portuguese — native');
+  expect(content).toContain('English — fluent');
+  expect(content).toContain('Spanish — fluent');
+  expect(content).toContain('French — intermediate');
 });

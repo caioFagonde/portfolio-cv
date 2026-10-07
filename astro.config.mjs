@@ -15,6 +15,7 @@ function prefixMarkdownLinks() {
 export default defineConfig({
   site: 'https://caiofagonde.github.io',
   base,
+  i18n: { defaultLocale: 'en', locales: ['en', 'pt'], routing: { prefixDefaultLocale: false } },
   devToolbar: { enabled: false },
   integrations: [react(), mdx(), tailwind({ applyBaseStyles: false })],
   markdown: {
